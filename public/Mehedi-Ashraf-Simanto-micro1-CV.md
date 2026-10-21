@@ -10,7 +10,9 @@ LinkedIn: https://www.linkedin.com/in/mehedi-simanto-1000641a7
 
 ## Summary
 
-CSE graduate from North South University (expected Dec 2026) who already builds evaluation-shaped work: original eval cases, multi-step reasoning prompts, rubric scoring, and documented research trails. I design challenging question–answer pairs, triangulate answers across sources, score model outputs against explicit rubrics, and iterate difficulty when models pass too easily — offline, with reproducible reports. Comfortable working independently, writing with precision, and treating quality standards as non-negotiable.
+CSE graduate from North South University (expected Dec 2026) who builds evaluation-shaped work: original eval cases, multi-step reasoning prompts, rubric scoring, and documented research trails across **coding, systems, finance, and clinical epidemiology**.
+
+I design challenging Q&A pairs, triangulate primary sources, score fluent model-style answers with explicit rubrics, and **raise difficulty when probes score ≥4/5 without synthesis** — with a logged DRAFT → probe → final item trail. I incorporate reviewer feedback into revisions and keep gold keys guideline-aligned.
 
 ---
 
@@ -19,9 +21,6 @@ CSE graduate from North South University (expected Dec 2026) who already builds 
 **B.Sc. in Computer Science & Engineering** — North South University  
 2021 – Dec 2026 (expected) · Dhaka, Bangladesh
 
-- Coursework spanning algorithms, AI, software engineering, and systems — applied through production-shaped open-source projects.
-- Independent research habit: flagship repos ship architecture docs, tests, CI, and honest metrics.
-
 ---
 
 ## Experience
@@ -29,62 +28,47 @@ CSE graduate from North South University (expected Dec 2026) who already builds 
 ### Builder · Evaluator · Sole contributor — Independent AI / Systems Portfolio
 *2024 – Present*
 
-- Shipped 20+ public repositories covering LLM evaluation harnesses, agent workflows, NL→SQL safety, data quality, and LoRA fine-tuning.
-- Wrote batch eval pipelines with JSONL test cases, pluggable validators, rubric dimensions (accuracy / clarity / helpfulness), and Markdown + JSON reports.
-- Built multi-agent incident workflows with an evaluation harness scoring triage accuracy, remediation quality, and resolution rate.
+- Shipped 20+ public repositories: LLM eval harnesses, agent workflows, NL→SQL safety, data quality, LoRA fine-tuning.
+- Batch eval pipelines with JSONL cases, validators, rubric dimensions, Markdown/JSON reports.
+- Multi-agent eval harness (triage / remediation / resolution scoring).
+- **Frontier Eval Sample Pack**: ML, HTTP, Postgres, Basel LCR finance, diagnostic PPV — with capability probes, difficulty raises, and a two-round reviewer revision trail.
 
 ### Director of Logistics — ICMA NSU Student Chapter
 *Mar 2023 – Present*
 
-- Owned event logistics and delivery reliability — planning, coordination, and accountable execution under deadlines.
+- Event logistics and accountable delivery under deadlines.
 
 ---
 
-## Selected projects (updated October 2026 for this role)
+## Selected projects (updated Oct 2026)
 
-### 1. LLM Eval Harness — https://github.com/simanto4321/llm-eval-harness
-- Batch evaluation package: JSONL test cases, category validators, multi-dimension rubric scoring.
-- Aggregate per-model stats with offline MockProvider for reproducible local runs.
-- Cases for coding, reasoning, and formatting with diagnosable failure modes.
+1. **LLM Eval Harness** — https://github.com/simanto4321/llm-eval-harness  
+2. **LLM Eval Starter** — https://github.com/simanto4321/llm-eval-starter  
+3. **AgentOps Desk** — https://github.com/simanto4321/agentops-desk  
+4. **QueryPilot** — https://github.com/simanto4321/querypilot  
+5. **LLM Fine-Tune (LoRA)** — https://github.com/simanto4321/llm-finetune-lora  
+6. **Contract Intelligence Reviewer** — https://github.com/simanto4321/claude-contract-intelligence  
 
-### 2. LLM Eval Starter — https://github.com/simanto4321/llm-eval-starter
-- Compared mock LLM coding outputs using AST checks, stdlib-only rules, complexity heuristics, and rubrics.
-- Automated Markdown evaluation reports with clear pass/fail rationale.
+---
 
-### 3. AgentOps Desk — https://github.com/simanto4321/agentops-desk
-- Multi-agent incident workflow with human approval gate for high-risk actions.
-- Evaluation harness scoring scenario outcomes with deterministic replay.
+## Gaps closed for this application
 
-### 4. QueryPilot — https://github.com/simanto4321/querypilot
-- NL→SQL analytics agent with single-SELECT validation, governance guards, and approval gates.
-- Offline deterministic provider so reasoning paths stay testable.
-
-### 5. LLM Fine-Tune (LoRA) — https://github.com/simanto4321/llm-finetune-lora
-- DistilBERT + LoRA with baseline comparison and reproducibility manifests.
-- MODEL_CARD.md documenting intended use, evaluation, and limitations.
-
-### 6. Contract Intelligence Reviewer — https://github.com/simanto4321/claude-contract-intelligence
-- Explainable contract-risk rules that surface why a clause is flagged.
-- FastAPI + review dashboard for human-inspectable decisions.
+| Gap | Fix |
+|-----|-----|
+| Domain breadth | EV-04 finance (Basel LCR) + EV-05 clinical epidemiology (PPV) with primary-source triangulation |
+| Model-test → iterate difficulty | DRAFT → capability probe → raised finals; `scripts/probe-difficulty.py` |
+| Reviewer feedback loops | Two-round revision trail with feedback → actions → guideline alignment |
 
 ---
 
 ## Skills
 
-**Evaluation:** LLM response evaluation & rubric scoring; multi-step / synthesis question design; source triangulation & citation discipline; agent scenario harnesses & replay; difficulty iteration; AST / programmatic validators
+**Evaluation:** Rubric scoring; multi-step synthesis design; source triangulation; multi-domain items; capability probes & difficulty logs; reviewer revision trails; agent scenario harnesses; AST validators  
 
-**Technical:** Python; TypeScript; FastAPI; React; PostgreSQL; LoRA / PEFT; sqlglot validation; Docker · CI
+**Technical:** Python; TypeScript; FastAPI; React; PostgreSQL; LoRA/PEFT; sqlglot; Docker · CI  
 
-**Work style:** Written precision (English); attention to detail; self-direction in remote work; analytical synthesis; guideline adherence & review loops
-
----
-
-## Why micro1
-
-- Public work already maps to the scope: original hard Q&A, research with citations, multi-step reasoning, testing against models, and refining from feedback.
-- Care about frontier capability gaps — not trivia. Frontier Eval Sample Pack demonstrates questions that require synthesis, not single-source lookup.
-- As a recent grad with domain depth in coding, analytics, and systems, ready to contribute as a contractor while ramping on project-specific guidelines.
+**Work style:** Written precision; attention to detail; self-direction; analytical synthesis; guideline adherence
 
 ---
 
-*Accompanying work sample: Frontier Eval Sample Pack (multi-step Q&A with source triangulation) included in the application site.*
+*Work sample: Frontier Eval Sample Pack on the application site (`/sample-eval`).*

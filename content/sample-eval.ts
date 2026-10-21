@@ -24,20 +24,29 @@ export type EvalItem = {
   synthesisNote: string;
   graderNotes: string[];
   trapAnswers: string[];
+  disclaimer?: string;
 };
 
 export const sampleEvalMeta = {
   title: "Frontier Eval Sample Pack",
   subtitle:
-    "Original multi-step items with source triangulation — written for the micro1 Evaluation Specialist scope",
+    "Original multi-step items with source triangulation — coding, systems, finance, and clinical epidemiology — written for the micro1 Evaluation Specialist scope",
   authored: "Mehedi Ashraf Simanto",
   date: "October 2026",
+  domainsCovered: [
+    "Machine Learning / NLP",
+    "Web / Distributed Systems",
+    "Databases",
+    "Finance / Banking regulation",
+    "Medicine / Clinical epidemiology",
+  ],
   method: [
     "Draft a question that cannot be answered from a single FAQ-style page.",
     "Pull 3+ independent sources; prefer primary docs, standards, or peer-reviewed summaries.",
     "Write a gold answer that synthesizes — then map each key claim to citations.",
     "List trap answers models commonly invent; define grader notes for partial credit.",
-    "Raise difficulty if a strong model would pass with shallow recall alone.",
+    "Run a capability probe; raise difficulty if a strong fluent answer scores ≥4/5 without synthesis.",
+    "Incorporate reviewer feedback and re-check guideline alignment before locking the item.",
   ],
 };
 
@@ -113,6 +122,54 @@ export const sources: Source[] = [
     url: "https://use-the-index-luke.com/",
     accessed: "2026-10-21",
     note: "Independent practitioner reference for selectivity and covering indexes.",
+  },
+  {
+    id: "S10",
+    title: "Basel III: The Liquidity Coverage Ratio and liquidity risk monitoring tools",
+    publisher: "Basel Committee on Banking Supervision (BIS)",
+    url: "https://www.bis.org/publ/bcbs238.htm",
+    accessed: "2026-10-21",
+    note: "Primary regulatory framework for LCR (HQLA / net cash outflows).",
+  },
+  {
+    id: "S11",
+    title: "Liquidity Coverage Ratio — overview",
+    publisher: "Bank for International Settlements",
+    url: "https://www.bis.org/basel_framework/chapter/LCR/10.htm",
+    accessed: "2026-10-21",
+    note: "Basel Framework chapter used to triangulate LCR structure and HQLA tiers.",
+  },
+  {
+    id: "S12",
+    title: "Principles for Sound Liquidity Risk Management and Supervision",
+    publisher: "Basel Committee on Banking Supervision",
+    url: "https://www.bis.org/publ/bcbs144.htm",
+    accessed: "2026-10-21",
+    note: "Supervisory principles context for why short-term liquidity buffers exist.",
+  },
+  {
+    id: "S13",
+    title: "Principles of Epidemiology in Public Health Practice — Lesson 3 (Measures)",
+    publisher: "CDC",
+    url: "https://www.cdc.gov/csels/dsepd/ss1978/lesson3/index.html",
+    accessed: "2026-10-21",
+    note: "Primary public-health teaching text for sensitivity, specificity, predictive value.",
+  },
+  {
+    id: "S14",
+    title: "Evaluation of Diagnostic Tests",
+    publisher: "NCBI Bookshelf / StatPearls",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK557428/",
+    accessed: "2026-10-21",
+    note: "Secondary clinical reference for PPV/NPV dependence on prevalence.",
+  },
+  {
+    id: "S15",
+    title: "Bayes’ theorem — predictive values",
+    publisher: "Wikipedia (cross-check only)",
+    url: "https://en.wikipedia.org/wiki/Positive_and_negative_predictive_values",
+    accessed: "2026-10-21",
+    note: "Formula cross-check only; not used as sole authority — verified against CDC/StatPearls.",
   },
 ];
 
@@ -232,6 +289,88 @@ export const evalItems: EvalItem[] = [
     trapAnswers: [
       "“Indexes always speed up ORDER BY” (not if the wrong leading column).",
       "“SELECT * is free with any index” (covering/index-only caveats).",
+    ],
+  },
+  {
+    id: "EV-04",
+    domain: "Finance / Banking regulation",
+    difficulty: "very-hard",
+    question:
+      "A treasury analyst says: “If we swap most of our Level 1 HQLA into higher-yielding Level 2A assets, LCR stays the same because both count as high-quality liquid assets — we just earn more carry.” Using the Basel LCR framework (not a blog summary), explain what is wrong with this claim, how HQLA tiers and caps interact with the LCR ratio’s structure, and what liquidity-risk principle the analyst is ignoring. Stay conceptual: do not invent jurisdiction-specific numeric haircuts.",
+    whyHard:
+      "Requires synthesizing Basel LCR mechanics (HQLA composition, tiering/caps, outflows) with supervisory liquidity principles — not a one-line definition of LCR.",
+    goldAnswer:
+      "The claim treats “HQLA” as a homogeneous bucket. Under the Basel LCR framework, the ratio is High-Quality Liquid Assets divided by total net cash outflows over a 30-calendar-day stress scenario. Level 1 assets (e.g., central bank reserves and certain sovereigns meeting criteria) are the highest-quality stock and are treated more favorably than Level 2 assets. Level 2A (and 2B where applicable) assets are eligible only within limits and with haircuts; they are not interchangeable 1:1 with Level 1 for maintaining the same LCR resilience. Swapping Level 1 into Level 2A therefore typically reduces the usable HQLA after haircuts/caps even if market value looks similar, which can lower LCR and weaken the buffer meant to survive acute outflow stress. The analyst also ignores the supervisory point of the standard: short-term liquidity buffers exist so the bank can meet stressed outflows without fire-selling; chasing carry by migrating down the HQLA quality stack trades resilience for yield — the opposite of sound liquidity risk management principles emphasized by the Basel liquidity principles. A correct answer must connect ratio structure (numerator quality constraints) to the risk-management purpose, citing the LCR framework rather than a slogan definition.",
+    keyClaims: [
+      {
+        claim:
+          "LCR = HQLA / net cash outflows over a 30-day stress window (Basel LCR framework).",
+        sources: ["S10", "S11"],
+      },
+      {
+        claim:
+          "HQLA is tiered (Level 1 vs Level 2); Level 2 eligibility is constrained (caps/haircuts), so Level 1≠Level 2A for LCR resilience.",
+        sources: ["S10", "S11"],
+      },
+      {
+        claim:
+          "Liquidity buffers exist to survive stressed outflows — yield-seeking that degrades buffer quality conflicts with sound liquidity risk management principles.",
+        sources: ["S12", "S10"],
+      },
+    ],
+    synthesisNote:
+      "Full credit requires tier/cap reasoning plus purpose of the buffer. Definition-only “LCR is HQLA over outflows” is partial at best.",
+    graderNotes: [
+      "Full credit: explains LCR structure, Level 1 vs Level 2 constraints, and why carry trade weakens resilience; cites Basel framing.",
+      "Partial: defines LCR correctly but treats all HQLA as interchangeable.",
+      "Fail: invents fake percentages presented as universal law, or claims Level 2A always improves LCR.",
+    ],
+    trapAnswers: [
+      "“LCR only applies to investment banks” (false framing).",
+      "“Level 2A assets are identical to Level 1 for regulatory liquidity” (contradicts tiering).",
+      "Invented precise haircut numbers presented as if universal without naming a jurisdiction’s rulebook.",
+    ],
+  },
+  {
+    id: "EV-05",
+    domain: "Medicine / Clinical epidemiology",
+    difficulty: "very-hard",
+    disclaimer:
+      "Epidemiology reasoning task for AI evaluation only — not medical advice and not a diagnosis protocol.",
+    question:
+      "A screening test for a rare condition has sensitivity 95% and specificity 95%. In a population where prevalence is 1%, a clinician tells a patient: “Your positive result means there is a 95% chance you have the disease.” Using CDC-style definitions of sensitivity/specificity/predictive value (triangulate with an independent clinical reference), show why this statement is wrong, compute the approximate positive predictive value with a 10,000-person cohort walkthrough, and name the cognitive trap.",
+    whyHard:
+      "Forces Bayes/prevalence reasoning; models often equate sensitivity with PPV. Requires a worked cohort plus definitions from public-health sources.",
+    goldAnswer:
+      "Sensitivity is P(positive | disease); specificity is P(negative | no disease). Neither is P(disease | positive) — that is positive predictive value (PPV), which depends on prevalence. Walkthrough for 10,000 people at 1% prevalence: ~100 have disease, ~9,900 do not. Sensitivity 95% → ~95 true positives (and ~5 false negatives). Specificity 95% → false-positive rate 5% → ~495 false positives. PPV ≈ 95 / (95+495) ≈ 16%. So a positive result implies roughly one-in-six probability of disease in this population — not 95%. The clinician committed the classic base-rate / PPV trap: confusing a test’s classification accuracy in diseased/non-diseased groups with the post-test probability after a positive result. CDC teaching materials define these measures separately; clinical references emphasize that predictive values move with prevalence even when sensitivity and specificity are fixed.",
+    keyClaims: [
+      {
+        claim:
+          "Sensitivity and specificity are conditional on true disease status; PPV/NPV are conditional on test result and depend on prevalence.",
+        sources: ["S13", "S14"],
+      },
+      {
+        claim:
+          "With prevalence 1%, sens=spec=95%, cohort math yields PPV ≈ 16%, not 95%.",
+        sources: ["S13", "S14", "S15"],
+      },
+      {
+        claim:
+          "Equating sensitivity with post-test disease probability is a base-rate / PPV confusion.",
+        sources: ["S14", "S13"],
+      },
+    ],
+    synthesisNote:
+      "Require the cohort arithmetic (or equivalent Bayes). Verbal “PPV depends on prevalence” without numbers is only partial.",
+    graderNotes: [
+      "Full credit: correct definitions, ~16% PPV via cohort or Bayes, names the trap; sources aligned.",
+      "Partial: says PPV depends on prevalence but computes incorrectly or skips numbers.",
+      "Fail: agrees the clinician is right, or swaps sensitivity/specificity definitions.",
+    ],
+    trapAnswers: [
+      "“95% sensitivity means 95% PPV” (the exact trap).",
+      "“Specificity is irrelevant after a positive test” (false).",
+      "Using 50% prevalence silently to make PPV look like 95%.",
     ],
   },
 ];

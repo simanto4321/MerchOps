@@ -15,10 +15,16 @@ Open [http://127.0.0.1:4321](http://127.0.0.1:4321).
 |-------|----------|
 | `/` | Tailored CV overview |
 | `/projects` | Six selected repos + Oct 2026 updates |
-| `/sample-eval` | Original multi-step Q&A work sample |
+| `/sample-eval` | Multi-domain Q&A + difficulty probes + reviewer trail |
 | `/print` | Print / Save as PDF |
 
 Plain-text CV: [`public/Mehedi-Ashraf-Simanto-micro1-CV.md`](public/Mehedi-Ashraf-Simanto-micro1-CV.md)
+
+Difficulty probe (no API key):
+
+```bash
+python3 scripts/probe-difficulty.py
+```
 
 ## Project selection
 

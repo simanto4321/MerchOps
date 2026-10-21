@@ -1,10 +1,20 @@
-import { evalItems, sampleEvalMeta, sources } from "../../../content/sample-eval";
+import {
+  evalItems,
+  sampleEvalMeta,
+  sources,
+} from "../../../content/sample-eval";
+import {
+  difficultyIterations,
+  gapClosureMeta,
+  probeProtocol,
+  reviewerRounds,
+} from "../../../content/eval-process";
 import { Section } from "@/components/Section";
 
 export const metadata = {
   title: "Frontier Eval Sample Pack · Mehedi Ashraf Simanto",
   description:
-    "Original multi-step evaluation items with source triangulation for micro1 Evaluation Specialist applications.",
+    "Multi-domain evaluation items with source triangulation, difficulty probes, and reviewer revision trails for micro1.",
 };
 
 export default function SampleEvalPage() {
@@ -23,7 +33,16 @@ export default function SampleEvalPage() {
         <p className="mt-2 text-sm text-[var(--muted)]">
           Author: {sampleEvalMeta.authored}
         </p>
+        <p className="mt-4 text-sm text-[var(--ink-soft)]">
+          Domains: {sampleEvalMeta.domainsCovered.join(" · ")}
+        </p>
       </header>
+
+      <Section eyebrow="Gap closure" title="What this pack now proves">
+        <p className="max-w-3xl text-[var(--ink-soft)] leading-relaxed">
+          {gapClosureMeta.summary}
+        </p>
+      </Section>
 
       <Section eyebrow="Method" title="How each item was built">
         <ol className="list-decimal space-y-2 pl-5 text-[var(--ink-soft)]">
@@ -31,6 +50,101 @@ export default function SampleEvalPage() {
             <li key={step}>{step}</li>
           ))}
         </ol>
+      </Section>
+
+      <Section eyebrow="Probe protocol" title={probeProtocol.title}>
+        <ol className="list-decimal space-y-2 pl-5 text-[var(--ink-soft)]">
+          {probeProtocol.steps.map((step) => (
+            <li key={step}>{step}</li>
+          ))}
+        </ol>
+        <p className="mt-4 font-mono-ui text-xs text-[var(--muted)]">
+          {probeProtocol.tooling}
+        </p>
+      </Section>
+
+      <Section
+        eyebrow="Difficulty iteration"
+        title="Draft → probe → raise difficulty"
+      >
+        <div className="space-y-5">
+          {difficultyIterations.map((d) => (
+            <article
+              key={d.itemId}
+              className="border border-[var(--line)] bg-[rgba(255,252,246,0.7)] p-5"
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-mono-ui text-xs text-[var(--copper)]">
+                  {d.itemId}
+                </span>
+                <span className="text-xs text-[var(--muted)]">→</span>
+                <span className="font-mono-ui text-xs font-semibold text-[var(--accent-deep)]">
+                  {d.finalItemId}
+                </span>
+                <span className="font-mono-ui text-xs uppercase tracking-wider text-[var(--muted)]">
+                  {d.domain}
+                </span>
+              </div>
+              <p className="mt-3 text-sm text-[var(--ink)]">
+                <span className="font-semibold">v1:</span> {d.v1Question}
+              </p>
+              <p className="mt-2 text-sm text-[var(--ink-soft)]">
+                <span className="font-semibold text-[var(--ink)]">Probe:</span>{" "}
+                {d.probeResult.outcome} ({d.probeResult.date})
+              </p>
+              <p className="mt-1 text-sm text-[var(--muted)]">
+                {d.probeResult.scoreNote}
+              </p>
+              <p className="mt-2 text-sm text-[var(--ink-soft)]">
+                <span className="font-semibold text-[var(--ink)]">
+                  Why too easy:
+                </span>{" "}
+                {d.whyTooEasy}
+              </p>
+              <p className="mt-2 border-l-2 border-[var(--accent)] pl-3 text-sm text-[var(--ink)]">
+                {d.v2Change}
+              </p>
+            </article>
+          ))}
+        </div>
+      </Section>
+
+      <Section eyebrow="Reviewer loop" title="Feedback → revision trail">
+        <div className="space-y-6">
+          {reviewerRounds.map((r) => (
+            <article
+              key={r.round}
+              className="border border-[var(--line)] bg-[rgba(255,252,246,0.7)] p-5"
+            >
+              <p className="font-mono-ui text-xs uppercase tracking-wider text-[var(--copper)]">
+                Round {r.round} · {r.date}
+              </p>
+              <h3 className="font-display mt-1 text-2xl text-[var(--ink)]">
+                {r.reviewer}
+              </h3>
+              <p className="text-sm text-[var(--muted)]">{r.role}</p>
+              <h4 className="mt-4 text-sm font-semibold text-[var(--ink)]">
+                Feedback
+              </h4>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[var(--ink-soft)]">
+                {r.feedback.map((f) => (
+                  <li key={f}>{f}</li>
+                ))}
+              </ul>
+              <h4 className="mt-4 text-sm font-semibold text-[var(--ink)]">
+                Author actions
+              </h4>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[var(--ink-soft)]">
+                {r.authorActions.map((a) => (
+                  <li key={a}>{a}</li>
+                ))}
+              </ul>
+              <p className="mt-3 text-sm italic text-[var(--muted)]">
+                {r.guidelineAlignment}
+              </p>
+            </article>
+          ))}
+        </div>
       </Section>
 
       <Section eyebrow="Sources" title="Triangulation library">
@@ -86,10 +200,16 @@ export default function SampleEvalPage() {
               </span>
             </div>
 
+            {item.disclaimer ? (
+              <p className="mt-3 text-xs text-[var(--muted)]">{item.disclaimer}</p>
+            ) : null}
+
             <h2 className="font-display mt-4 text-2xl text-[var(--ink)] sm:text-3xl">
               Question
             </h2>
-            <p className="mt-3 leading-relaxed text-[var(--ink)]">{item.question}</p>
+            <p className="mt-3 leading-relaxed text-[var(--ink)]">
+              {item.question}
+            </p>
 
             <h3 className="mt-6 text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
               Why this is hard

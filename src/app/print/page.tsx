@@ -131,10 +131,23 @@ export default function PrintPage() {
         </ul>
       </section>
 
+      <section className="mt-5">
+        <h2 className="font-display text-lg font-semibold uppercase tracking-wide">
+          Gaps closed
+        </h2>
+        <ul className="mt-2 list-disc pl-5 text-sm leading-snug">
+          {profile.gapsClosed.map((g) => (
+            <li key={g.gap}>
+              <span className="font-semibold">{g.gap}:</span> {g.fix}
+            </li>
+          ))}
+        </ul>
+      </section>
+
       <p className="mt-6 text-xs text-neutral-600">
-        Accompanying work sample: Frontier Eval Sample Pack (multi-step Q&A with
-        source triangulation) available in the application site under Sample
-        eval pack.
+        Accompanying work sample: Frontier Eval Sample Pack — multi-domain Q&A
+        (incl. finance + clinical epidemiology), capability-probe difficulty
+        iteration, and reviewer revision trail — under Sample eval pack.
       </p>
     </main>
   );

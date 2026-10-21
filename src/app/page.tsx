@@ -98,8 +98,24 @@ export default function HomePage() {
             <Link href="/sample-eval" className="font-semibold text-[var(--accent-deep)] underline-offset-2 hover:underline">
               Frontier Eval Sample Pack
             </Link>{" "}
-            for original multi-step items with source triangulation.
+            for multi-domain items, difficulty probes, and reviewer revision trails.
           </p>
+        </Section>
+
+        <Section eyebrow="Evidence" title="Gaps closed for this application">
+          <div className="grid gap-4 sm:grid-cols-3">
+            {profile.gapsClosed.map((g) => (
+              <div
+                key={g.gap}
+                className="border border-[var(--line)] bg-[rgba(255,252,246,0.65)] p-4"
+              >
+                <h3 className="font-display text-xl text-[var(--ink)]">{g.gap}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">
+                  {g.fix}
+                </p>
+              </div>
+            ))}
+          </div>
         </Section>
 
         <Section eyebrow="Education" title={profile.education.school}>
