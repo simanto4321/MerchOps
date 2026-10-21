@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #102 intermediate;
+  --ink-soft: #243b42;
+  --paper: #f3efe6;
+  --paper-deep: #e7e0d2;
+  --accent: #0f6e6a;
+  --accent-deep: #0a4f4c;
+  --copper: #b85c38;
+  --line: rgba(16, 35, 40, 0.14);
+  --muted: #5a6b70;
+  --background: var(--paper);
+  --foreground: var(--ink);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-body), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(15, 110, 106, 0.12), transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, rgba(184, 92, 56, 0.1), transparent 50%),
+    linear-gradient(180deg, #f7f3eb 0%, #efe8da 45%, #e9e2d4 100%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 23px,
+      rgba(16, 35, 40, 0.025) 23px,
+      rgba(16, 35, 40, 0.025) 24px
+    );
+}
+
+::selection {
+  background: rgba(15, 110, 106, 0.22);
+}
+
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+}
+
+.font-mono-ui {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.prose-tight p {
+  max-width: 65ch;
+}
+
+@media print {
+  body::before {
+    display: none;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-break {
+    break-before: page;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+}
