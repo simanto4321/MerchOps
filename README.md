@@ -35,8 +35,8 @@ Next phase (Postgres + Vercel): see [`GO_LIVE.md`](./GO_LIVE.md).
 
 | Area | Route | Notes |
 |------|-------|--------|
-| Landing | `/` | Premium forest-ink hero, feature icons, EN/BN |
-| Home desk | `/dashboard` | Ops overview metrics, follow-ups, low stock |
+| Landing | `/` | Full-bleed warehouse hero image, feature icons, EN/BN |
+| Home desk | `/dashboard` | Premium warehouse banner, metrics, follow-ups, low stock |
 | Orders | `/orders` | Filters, bulk pack entry, comments, tags, partial/exchange, merge, courier ship |
 | Inbox | `/inbox` | Unified IG / WA / FB / TikTok queue |
 | Stock | `/inventory` | Live qty; factory cost admin-only |

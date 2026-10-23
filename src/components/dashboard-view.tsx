@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { MetricCard } from "@/components/metric-card";
 import { Badge } from "@/components/ui/badge";
@@ -23,12 +24,57 @@ export function DashboardView({
 
   return (
     <div className="space-y-8">
-      <div className="rise-in">
-        <h1 className="font-[family-name:var(--font-display)] text-3xl text-stone-900 sm:text-4xl">
-          {d.title}
-        </h1>
-        <p className="mt-1 max-w-2xl text-sm text-stone-600">{d.subtitle}</p>
-      </div>
+      {/* Premium ops banner — same warehouse language as landing */}
+      <section className="rise-in relative isolate overflow-hidden rounded-2xl border border-teal-900/20 shadow-[0_18px_50px_-28px_rgba(12,42,38,0.55)]">
+        <Image
+          src="/images/warehouse-hero.jpg"
+          alt=""
+          fill
+          priority
+          sizes="(max-width: 1024px) 100vw, 960px"
+          className="object-cover"
+          aria-hidden
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-[#041916]/94 via-[#0c2a26]/88 to-[#0c2a26]/55"
+          aria-hidden
+        />
+        <div
+          className="absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:40px_40px]"
+          aria-hidden
+        />
+        <div className="relative z-10 px-5 py-8 sm:px-7 sm:py-10">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#f0b429]/90">
+            {t.brand}
+          </p>
+          <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl text-teal-50 sm:text-4xl">
+            {d.title}
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-teal-100/75">
+            {d.subtitle}
+          </p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <Link
+              href="/orders"
+              className="gold-btn !rounded-md !px-4 !py-2 text-xs"
+            >
+              {t.nav.orders}
+            </Link>
+            <Link
+              href="/inbox"
+              className="inline-flex items-center rounded-md border border-white/25 bg-white/5 px-4 py-2 text-xs font-semibold text-teal-50 backdrop-blur transition hover:bg-white/10"
+            >
+              {t.nav.inbox}
+            </Link>
+            <Link
+              href="/inventory"
+              className="inline-flex items-center rounded-md border border-white/25 bg-white/5 px-4 py-2 text-xs font-semibold text-teal-50 backdrop-blur transition hover:bg-white/10"
+            >
+              {t.nav.inventory}
+            </Link>
+          </div>
+        </div>
+      </section>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard shine label={d.ordersToday} value={String(m.dailyOrders)} />
@@ -119,8 +165,21 @@ export function DashboardView({
           )}
         </section>
 
-        <section className="rise-in rounded-2xl border border-stone-200/90 bg-white/90 p-5 shadow-[0_12px_40px_-24px_rgba(12,42,38,0.4)]">
-          <div className="mb-4 flex items-center justify-between gap-2">
+        <section className="rise-in relative overflow-hidden rounded-2xl border border-stone-200/90 bg-white/90 p-5 shadow-[0_12px_40px_-24px_rgba(12,42,38,0.4)]">
+          <div
+            className="pointer-events-none absolute inset-y-0 right-0 w-1/3 opacity-25"
+            aria-hidden
+          >
+            <Image
+              src="/images/ops-desk.jpg"
+              alt=""
+              fill
+              sizes="200px"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-l from-transparent to-white" />
+          </div>
+          <div className="relative z-10 mb-4 flex items-center justify-between gap-2">
             <h2 className="font-[family-name:var(--font-display)] text-xl">
               {d.lowStock}
             </h2>
@@ -129,9 +188,9 @@ export function DashboardView({
             </Link>
           </div>
           {m.lowStock.length === 0 ? (
-            <p className="text-sm text-stone-500">—</p>
+            <p className="relative z-10 text-sm text-stone-500">—</p>
           ) : (
-            <ul className="space-y-2">
+            <ul className="relative z-10 space-y-2">
               {m.lowStock.map((p) => (
                 <li
                   key={p.id}

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRight, Link2, ShieldCheck, Workflow } from "lucide-react";
@@ -37,29 +38,38 @@ export function LandingPage() {
         </nav>
         <div className="flex items-center gap-2">
           <LanguageToggle />
-          <Link href="/login" className="hidden gold-btn sm:inline-flex !rounded-md !px-3 !py-1.5">
+          <Link
+            href="/login"
+            className="hidden gold-btn sm:inline-flex !rounded-md !px-3 !py-1.5"
+          >
             {L.ctaApp}
           </Link>
         </div>
       </header>
 
+      {/* Full-bleed warehouse hero */}
       <section className="relative isolate min-h-[88vh] overflow-hidden">
-        <div
-          className="absolute inset-0 -z-10 bg-[url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=2400&q=80')] bg-cover bg-center"
+        <Image
+          src="/images/warehouse-hero.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
           aria-hidden
         />
         <div
-          className="absolute inset-0 -z-10 bg-gradient-to-r from-[#041916]/95 via-[#0c2a26]/88 to-[#0c2a26]/55"
+          className="absolute inset-0 bg-gradient-to-r from-[#041916]/95 via-[#0c2a26]/88 to-[#0c2a26]/45"
           aria-hidden
         />
         <div
-          className="absolute inset-0 -z-10 opacity-40 [background-image:linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:48px_48px]"
+          className="absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:48px_48px]"
           aria-hidden
         />
 
         <div
           className={cn(
-            "mx-auto flex max-w-6xl flex-col justify-end px-5 pb-16 pt-20 sm:px-8 sm:pb-24 sm:pt-28 transition-all duration-700",
+            "relative z-10 mx-auto flex min-h-[88vh] max-w-6xl flex-col justify-end px-5 pb-16 pt-20 sm:px-8 sm:pb-24 sm:pt-28 transition-all duration-700",
             ready ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
           )}
         >
@@ -128,8 +138,17 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section id="couriers" className="bg-[#0a2824] py-20">
-        <div className="mx-auto max-w-6xl px-5 sm:px-8">
+      <section id="couriers" className="relative overflow-hidden bg-[#0a2824] py-20">
+        <Image
+          src="/images/ops-desk.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover opacity-20"
+          aria-hidden
+        />
+        <div className="absolute inset-0 bg-[#0a2824]/85" aria-hidden />
+        <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8">
           <h2 className="font-[family-name:var(--font-display)] text-3xl text-teal-50 sm:text-4xl">
             {L.courierTitle}
           </h2>
@@ -138,7 +157,7 @@ export function LandingPage() {
             {COURIER_PRESETS.map((c) => (
               <div
                 key={c.provider}
-                className="flex items-center gap-3 rounded-xl border border-teal-800/60 bg-[#071f1c]/80 px-4 py-3"
+                className="flex items-center gap-3 rounded-xl border border-teal-800/60 bg-[#071f1c]/80 px-4 py-3 backdrop-blur"
               >
                 <span
                   className="h-2.5 w-2.5 shrink-0 rounded-full"

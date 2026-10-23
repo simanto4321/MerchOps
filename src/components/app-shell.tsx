@@ -51,7 +51,7 @@ export function AppShell({
   ];
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[260px_1fr]">
+    <div className="desk-surface min-h-screen lg:grid lg:grid-cols-[260px_1fr]">
       <aside className="app-shell-aside border-b border-teal-950 text-stone-100 lg:border-b-0 lg:border-r lg:border-teal-950/80">
         <div className="px-5 py-7">
           <Link href="/" className="block">

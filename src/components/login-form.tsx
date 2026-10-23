@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -45,8 +46,13 @@ export function LoginForm({ nextPath }: { nextPath: string }) {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <aside className="relative hidden overflow-hidden lg:block">
-        <div
-          className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center"
+        <Image
+          src="/images/warehouse-hero.jpg"
+          alt=""
+          fill
+          priority
+          sizes="50vw"
+          className="object-cover"
           aria-hidden
         />
         <div className="absolute inset-0 bg-gradient-to-br from-[#041916]/95 via-[#0c2a26]/88 to-[#0c2a26]/55" />

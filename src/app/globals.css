@@ -49,6 +49,13 @@ a {
     linear-gradient(175deg, #0c2a26 0%, #071f1c 55%, #0a2420 100%);
 }
 
+.desk-surface {
+  background:
+    radial-gradient(ellipse 50% 30% at 100% 0%, rgba(240, 180, 41, 0.07), transparent 45%),
+    radial-gradient(ellipse 80% 50% at 0% -10%, rgba(15, 118, 110, 0.1), transparent 55%),
+    transparent;
+}
+
 .panel {
   @apply rounded-2xl border border-stone-200/90 bg-white/90 shadow-[0_12px_40px_-24px_rgba(12,42,38,0.4)] backdrop-blur;
 }
