@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Database } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { LanguageToggle } from "./language-toggle";
@@ -44,13 +44,16 @@ export function LoginForm({ nextPath }: { nextPath: string }) {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      {/* Brand panel — matches landing hero language */}
       <aside className="relative hidden overflow-hidden lg:block">
         <div
-          className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center"
+          className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center"
           aria-hidden
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#041916]/95 via-[#0c2a26]/88 to-[#0c2a26]/70" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#041916]/95 via-[#0c2a26]/88 to-[#0c2a26]/55" />
+        <div
+          className="absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:48px_48px]"
+          aria-hidden
+        />
         <div className="relative z-10 flex h-full flex-col justify-between p-10 text-teal-50">
           <Link
             href="/"
@@ -67,12 +70,16 @@ export function LoginForm({ nextPath }: { nextPath: string }) {
                 ? "অর্ডার, স্টক, কুরিয়ার ও অডিট—এক জায়গায়। Prisma দিয়ে ডেটা সেভ হয়।"
                 : "Orders, stock, couriers, and audit—one place. Data persists with Prisma."}
             </p>
+            <p className="mt-6 inline-flex items-center gap-2 rounded-md border border-teal-700/50 bg-[#071f1c]/70 px-3 py-1.5 text-xs text-teal-100/80">
+              <Database className="h-3.5 w-3.5 text-[#f0b429]" />
+              Prisma · SQLite (Postgres-ready)
+            </p>
           </div>
           <p className="text-xs text-teal-200/45">{t.brandTag}</p>
         </div>
       </aside>
 
-      <div className="flex flex-col bg-[#031512] text-teal-50 lg:bg-[#06201c]">
+      <div className="flex flex-col bg-[#041916] text-teal-50 lg:bg-[#071f1c]">
         <header className="flex items-center justify-between px-5 py-5 sm:px-8 lg:px-10">
           <Link
             href="/"
@@ -100,7 +107,7 @@ export function LoginForm({ nextPath }: { nextPath: string }) {
 
           <form
             onSubmit={submit}
-            className="mt-8 space-y-3 rounded-2xl border border-teal-800/50 bg-[#0a2824]/90 p-5 shadow-[0_24px_60px_-28px_rgba(0,0,0,0.6)]"
+            className="mt-8 space-y-3 rounded-xl border border-teal-800/60 bg-[#0a2824]/90 p-5 shadow-[0_24px_60px_-28px_rgba(0,0,0,0.6)]"
           >
             <label className="block text-sm">
               <span className="mb-1.5 block text-xs text-teal-200/70">Email</span>
