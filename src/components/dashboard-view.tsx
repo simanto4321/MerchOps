@@ -25,7 +25,7 @@ export function DashboardView({
   return (
     <div className="space-y-8">
       {/* Warehouse banner — light wash so black type stays readable */}
-      <section className="rise-in relative isolate overflow-hidden rounded-2xl border border-stone-200/80 shadow-[0_18px_50px_-28px_rgba(12,42,38,0.45)]">
+      <section className="relative isolate overflow-hidden rounded-2xl border border-stone-200/80 shadow-[0_18px_50px_-28px_rgba(12,42,38,0.45)]">
         <Image
           src="/images/warehouse-hero.jpg"
           alt=""
@@ -113,7 +113,7 @@ export function DashboardView({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rise-in rounded-2xl border border-stone-200/90 bg-white/90 p-5 shadow-[0_12px_40px_-24px_rgba(12,42,38,0.4)]">
+        <section className="rounded-2xl border border-stone-200/90 bg-white p-5 shadow-[0_12px_40px_-24px_rgba(12,42,38,0.4)]">
           <div className="mb-4 flex items-center justify-between gap-2">
             <h2 className="font-[family-name:var(--font-display)] text-xl">
               {d.followUps}
@@ -155,21 +155,8 @@ export function DashboardView({
           )}
         </section>
 
-        <section className="rise-in relative overflow-hidden rounded-2xl border border-stone-200/90 bg-white/90 p-5 shadow-[0_12px_40px_-24px_rgba(12,42,38,0.4)]">
-          <div
-            className="pointer-events-none absolute inset-y-0 right-0 w-1/3 opacity-25"
-            aria-hidden
-          >
-            <Image
-              src="/images/ops-desk.jpg"
-              alt=""
-              fill
-              sizes="200px"
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-l from-transparent to-white" />
-          </div>
-          <div className="relative z-10 mb-4 flex items-center justify-between gap-2">
+        <section className="rounded-2xl border border-stone-200/90 bg-white p-5 shadow-[0_12px_40px_-24px_rgba(12,42,38,0.4)]">
+          <div className="mb-4 flex items-center justify-between gap-2">
             <h2 className="font-[family-name:var(--font-display)] text-xl">
               {d.lowStock}
             </h2>
@@ -178,9 +165,9 @@ export function DashboardView({
             </Link>
           </div>
           {m.lowStock.length === 0 ? (
-            <p className="relative z-10 text-sm text-stone-500">—</p>
+            <p className="text-sm text-stone-500">—</p>
           ) : (
-            <ul className="relative z-10 space-y-2">
+            <ul className="space-y-2">
               {m.lowStock.map((p) => (
                 <li
                   key={p.id}
@@ -200,7 +187,7 @@ export function DashboardView({
       </div>
 
       {showCosts && m.adProfitByProduct.some((r) => r.lossFlag) ? (
-        <section className="rise-in rounded-2xl border border-rose-200 bg-rose-50/50 p-5">
+        <section className="rounded-2xl border border-rose-200 bg-rose-50/50 p-5">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="font-[family-name:var(--font-display)] text-xl">
               {d.adTable}

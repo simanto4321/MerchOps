@@ -101,7 +101,7 @@ export function AppShell({
       </aside>
 
       <div className="flex min-w-0 flex-col">
-        <header className="sticky top-0 z-30 flex flex-wrap items-center justify-between gap-3 border-b border-stone-200/80 bg-white/75 px-4 py-3 backdrop-blur-md sm:px-6">
+        <header className="sticky top-0 z-30 flex flex-wrap items-center justify-between gap-3 border-b border-stone-200/80 bg-white px-4 py-3 sm:px-6">
           <div>
             <p className="text-sm font-semibold tracking-tight text-stone-900">
               {t.shell.title}

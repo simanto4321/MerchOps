@@ -60,9 +60,9 @@ export function LoginForm({ nextPath }: { nextPath: string }) {
   }
 
   return (
-    <div className="relative min-h-screen">
-      {/* Sticky warehouse — does not scroll with the form */}
-      <div className="pointer-events-none fixed inset-0 -z-10">
+    <div className="relative isolate min-h-screen">
+      {/* Sticky warehouse — compositor-stable fixed layer (not body attachment) */}
+      <div className="pointer-events-none fixed inset-0 z-0">
         <Image
           src="/images/warehouse-hero.jpg"
           alt=""
@@ -73,7 +73,7 @@ export function LoginForm({ nextPath }: { nextPath: string }) {
           aria-hidden
         />
         <div
-          className="absolute inset-0 bg-gradient-to-br from-[#f4f7f5]/95 via-[#eef3f0]/90 to-[#e4ecea]/80"
+          className="absolute inset-0 bg-[#f4f7f5]/92"
           aria-hidden
         />
       </div>

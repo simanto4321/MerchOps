@@ -16,7 +16,7 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        "rise-in rounded-2xl border border-stone-200/90 bg-white/90 p-4 shadow-[0_10px_30px_-18px_rgba(12,42,38,0.45)] backdrop-blur",
+        "rounded-2xl border border-stone-200/90 bg-white p-4 shadow-[0_10px_30px_-18px_rgba(12,42,38,0.45)]",
         shine && "metric-shine",
         tone === "warn" && "border-amber-300/70 bg-amber-50/70",
         tone === "good" && "border-emerald-300/70 bg-emerald-50/50",
