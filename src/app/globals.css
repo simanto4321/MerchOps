@@ -3,10 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --background: #eef3f1;
-  --foreground: #0f1c1a;
+  --background: #e7efec;
+  --foreground: #0c1a17;
   --ink: #0c2a26;
+  --ink-deep: #041916;
   --gold: #f0b429;
+  --panel: #ffffff;
+  --mist: #d5e2de;
 }
 
 html,
@@ -18,8 +21,9 @@ body {
 body {
   color: var(--foreground);
   background:
-    radial-gradient(ellipse 70% 40% at 100% -10%, rgba(12, 42, 38, 0.06), transparent 50%),
-    linear-gradient(180deg, #e8efed 0%, #eef3f1 40%, #e3ebe8 100%);
+    radial-gradient(ellipse 90% 55% at -10% -20%, rgba(15, 118, 110, 0.14), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 110% 0%, rgba(12, 42, 38, 0.08), transparent 50%),
+    linear-gradient(165deg, #dce8e4 0%, #e7efec 45%, #d2dfda 100%);
   font-family: var(--font-body), var(--font-bengali), system-ui, sans-serif;
 }
 
@@ -37,17 +41,37 @@ a {
 }
 
 .landing-root {
-  background: #031512;
+  background: var(--ink-deep);
 }
 
 .app-shell-aside {
-  background: linear-gradient(180deg, #0c2a26 0%, #08201c 100%);
+  background:
+    linear-gradient(165deg, #0e322d 0%, #0c2a26 40%, #071f1c 100%);
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.04);
+}
+
+.desk-surface {
+  background:
+    radial-gradient(ellipse 50% 30% at 100% 0%, rgba(240, 180, 41, 0.06), transparent 45%),
+    transparent;
+}
+
+.panel {
+  @apply rounded-2xl border border-stone-200/90 bg-white/95 shadow-[0_18px_50px_-32px_rgba(12,42,38,0.55)];
+}
+
+.gold-btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full bg-[#f0b429] px-5 py-2.5 text-sm font-bold text-[#1a1408] transition hover:bg-[#f5c451];
+}
+
+.ink-btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full bg-[#0c2a26] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#143833];
 }
 
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -55,15 +79,66 @@ a {
   }
 }
 
+@keyframes fade-soft {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sheen {
+  0%,
+  65% {
+    transform: translateX(-130%);
+  }
+  100% {
+    transform: translateX(130%);
+  }
+}
+
 .rise-in {
-  animation: rise-in 0.45s ease-out both;
+  animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.fade-soft {
+  animation: fade-soft 0.7s ease both;
+}
+
+.metric-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 65%
+  );
+  transform: translateX(-130%);
+  animation: sheen 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@media print {
+  .app-shell-aside,
+  header,
+  .print\:hidden {
+    display: none !important;
+  }
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #8aa19c;
+  background: #7f9792;
   border-radius: 999px;
 }

@@ -119,6 +119,7 @@ export function DashboardView({
         </h2>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard
+            shine
             href="/orders"
             label={d.ordersToday}
             value={String(m.dailyOrders)}
@@ -180,7 +181,7 @@ export function DashboardView({
       )}
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <section className="rise-in rounded-2xl border border-stone-200 bg-white p-5">
+        <section className="panel rise-in p-5">
           <div className="mb-4 flex items-center justify-between gap-2">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-rose-700/80">
@@ -240,7 +241,7 @@ export function DashboardView({
           )}
         </section>
 
-        <section className="rise-in rounded-2xl border border-stone-200 bg-white p-5">
+        <section className="panel rise-in p-5">
           <div className="mb-4 flex items-center justify-between gap-2">
             <h2 className="font-[family-name:var(--font-display)] text-xl text-stone-900">
               {d.lowStock}
