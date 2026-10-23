@@ -18,6 +18,7 @@ async function main() {
       name: "Ayesha Rahman",
       email: "admin@merchops.local",
       role: "ADMIN",
+      pin: "1234",
     },
   });
   const staff = await prisma.user.create({
@@ -25,6 +26,7 @@ async function main() {
       name: "Manik Hasan",
       email: "staff@merchops.local",
       role: "STAFF",
+      pin: "5678",
     },
   });
   await prisma.user.create({
@@ -32,6 +34,7 @@ async function main() {
       name: "Guest Viewer",
       email: "guest@merchops.local",
       role: "GUEST",
+      pin: "0000",
     },
   });
 

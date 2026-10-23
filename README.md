@@ -15,18 +15,21 @@ npm run dev
 - Desk: [http://127.0.0.1:4317/dashboard](http://127.0.0.1:4317/dashboard)
 
 ```bash
-npm run lint      # TypeScript check
-npm run build     # Production build
-npm run db:reset  # Wipe + reseed demo data
+npm run lint           # TypeScript check
+npm run build          # Production build
+npm run db:reset       # Wipe + reseed demo data
+npm run test:features  # API regression (dev server must be running)
 ```
 
-## Demo users (header switcher)
+Sign in at `/login` (middleware protects the desk).
 
-| Role  | Email                | Sees costs / couriers setup / audit |
-|-------|----------------------|-------------------------------------|
-| Admin | admin@merchops.local | Yes                                 |
-| Staff | staff@merchops.local | No — packing, orders, ship only     |
-| Guest | guest@merchops.local | No                                  |
+| Role  | Email                | PIN  | Sees costs / couriers setup / audit |
+|-------|----------------------|------|-------------------------------------|
+| Admin | admin@merchops.local | 1234 | Yes                                 |
+| Staff | staff@merchops.local | 5678 | No — packing, orders, ship only     |
+| Guest | guest@merchops.local | 0000 | No                                  |
+
+Next phase (Postgres + Vercel): see [`GO_LIVE.md`](./GO_LIVE.md).
 
 ## What’s included
 

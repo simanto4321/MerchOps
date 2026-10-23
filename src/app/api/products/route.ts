@@ -31,7 +31,10 @@ function sanitizeProduct(
 
 export async function GET() {
   const user = await getCurrentUser();
-  const showCosts = !!user && canViewCosts(user.role);
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const showCosts = canViewCosts(user.role);
   const products = await prisma.product.findMany({ orderBy: { name: "asc" } });
   return NextResponse.json({
     products: products.map((p) => sanitizeProduct(p, showCosts)),

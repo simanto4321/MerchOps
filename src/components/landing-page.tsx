@@ -44,7 +44,7 @@ export function LandingPage() {
         <div className="flex items-center gap-2">
           <LanguageToggle />
           <Link
-            href="/dashboard"
+            href="/login"
             className="hidden rounded-full bg-teal-50 px-4 py-1.5 text-sm font-semibold text-[#0c2a26] transition hover:bg-white sm:inline-flex"
           >
             {L.ctaApp}
@@ -79,14 +79,14 @@ export function LandingPage() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              href="/dashboard"
+              href="/login"
               className="inline-flex items-center gap-2 rounded-full bg-[#f0b429] px-6 py-3 text-sm font-bold text-[#1a1408] transition hover:bg-[#f5c451]"
             >
               {L.heroPrimary}
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              href="/couriers"
+              href="/login?next=/couriers"
               className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10"
             >
               {L.heroSecondary}
@@ -143,7 +143,7 @@ export function LandingPage() {
               <p className="mt-3 text-teal-100/65">{L.courierBody}</p>
             </div>
             <Link
-              href="/couriers"
+              href="/login?next=/couriers"
               className="inline-flex items-center gap-2 self-start rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#0c2a26] hover:bg-teal-50"
             >
               {L.heroSecondary}
@@ -185,7 +185,7 @@ export function LandingPage() {
             <p className="mt-2 text-sm text-teal-100/60">{L.footerCta}</p>
           </div>
           <Link
-            href="/dashboard"
+            href="/login"
             className="inline-flex items-center gap-2 rounded-full bg-[#f0b429] px-6 py-3 text-sm font-bold text-[#1a1408] hover:bg-[#f5c451]"
           >
             {L.footerBtn}

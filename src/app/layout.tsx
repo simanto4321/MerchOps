@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, Fraunces, Noto_Sans_Bengali } from "next/font/google";
 import { LanguageProvider } from "@/lib/i18n/provider";
+import { ToastProvider } from "@/components/toast";
 import "./globals.css";
 
 const body = DM_Sans({
@@ -35,7 +36,9 @@ export default function RootLayout({
       <body
         className={`${body.variable} ${display.variable} ${bengali.variable} antialiased`}
       >
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

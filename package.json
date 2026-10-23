@@ -8,6 +8,7 @@
     "start": "next start --port 4317 --hostname 127.0.0.1",
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
+    "test:features": "node scripts/test-features.mjs",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",

@@ -1,15 +1,18 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import {
-  buildOrderWhere,
-  createOrder,
-} from "@/lib/orders";
+import { buildOrderWhere, createOrder } from "@/lib/orders";
 import { notifyTelegram } from "@/lib/telegram";
 import { parseTags } from "@/lib/utils";
+import { bulkOrdersSchema, createOrderSchema } from "@/lib/validation";
 import type { DeliveryStatus, SourceChannel } from "@/lib/types";
 
 export async function GET(req: Request) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { searchParams } = new URL(req.url);
   const channel = searchParams.get("channel") as SourceChannel | null;
   const status = searchParams.get("status") as
@@ -43,39 +46,47 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const body = await req.json();
 
     if (Array.isArray(body.bulk)) {
+      const parsed = bulkOrdersSchema.safeParse(body);
+      if (!parsed.success) {
+        return NextResponse.json(
+          { error: parsed.error.issues[0]?.message ?? "Invalid bulk payload" },
+          { status: 400 },
+        );
+      }
       const created = [];
-      for (const entry of body.bulk) {
+      for (const entry of parsed.data.bulk) {
         const order = await createOrder({
-          customerName: entry.customerName,
-          customerPhone: entry.customerPhone,
-          sourceChannel: entry.sourceChannel ?? "PHONE",
-          parcelValue: entry.parcelValue,
-          adminComments: entry.adminComments,
-          tags: entry.tags,
-          createdById: user?.id,
-          items: entry.items,
+          ...entry,
+          createdById: user.id,
         });
         created.push(order);
       }
       await notifyTelegram(
         `MerchOps: ${created.length} parcel(s) entered.\n` +
-          created.map((o) => `${o.orderNumber} · ${o.customerPhone} · ৳${o.parcelValue}`).join("\n"),
+          created
+            .map((o) => `${o.orderNumber} · ${o.customerPhone} · ৳${o.parcelValue}`)
+            .join("\n"),
       );
       return NextResponse.json({ orders: created });
     }
 
+    const parsed = createOrderSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid order" },
+        { status: 400 },
+      );
+    }
+
     const order = await createOrder({
-      customerName: body.customerName,
-      customerPhone: body.customerPhone,
-      sourceChannel: body.sourceChannel ?? "PHONE",
-      parcelValue: body.parcelValue,
-      adminComments: body.adminComments,
-      tags: body.tags,
-      createdById: user?.id,
-      items: body.items,
+      ...parsed.data,
+      createdById: user.id,
     });
 
     await notifyTelegram(

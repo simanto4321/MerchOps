@@ -17,6 +17,8 @@ model User {
   email     String     @unique
   /// ADMIN | STAFF | GUEST
   role      String     @default("STAFF")
+  /// Demo login PIN (replace with hashed passwords before public launch)
+  pin       String     @default("0000")
   createdAt DateTime   @default(now())
   auditLogs AuditLog[]
   orders    Order[]    @relation("OrderCreatedBy")

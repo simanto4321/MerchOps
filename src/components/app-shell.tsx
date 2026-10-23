@@ -16,11 +16,13 @@ import {
   Search,
   PackagePlus,
   AlertTriangle,
+  LogOut as LogOutIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RoleSwitcher } from "./role-switcher";
 import { LanguageToggleLight } from "./language-toggle";
 import { useI18n } from "@/lib/i18n/provider";
+import { useToast } from "./toast";
 
 export function AppShell({
   children,
@@ -32,7 +34,15 @@ export function AppShell({
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useI18n();
+  const { push: toast } = useToast();
   const [q, setQ] = useState("");
+
+  async function logout() {
+    await fetch("/api/session", { method: "DELETE" });
+    toast(t.shell.signedIn === "You" ? "Signed out" : "সাইন আউট", "info");
+    router.replace("/login");
+    router.refresh();
+  }
 
   const isAdmin = user?.role === "ADMIN";
 
@@ -158,6 +168,15 @@ export function AppShell({
             </form>
             <LanguageToggleLight />
             <RoleSwitcher user={user} />
+            <button
+              type="button"
+              onClick={logout}
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3 text-xs font-medium text-stone-700 hover:bg-stone-50"
+              title="Sign out"
+            >
+              <LogOutIcon className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Out</span>
+            </button>
           </div>
 
           <div className="flex gap-2 overflow-x-auto px-4 pb-3 sm:px-6">

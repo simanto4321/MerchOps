@@ -13,6 +13,8 @@ import {
   STATUS_LABELS,
 } from "@/lib/constants";
 import { formatBdt } from "@/lib/utils";
+import { useToast } from "./toast";
+import Link from "next/link";
 
 type Product = {
   id: string;
@@ -64,6 +66,7 @@ export function OrdersDesk({
   initialShowEntry?: boolean;
 }) {
   const router = useRouter();
+  const { push: toast } = useToast();
   const [orders, setOrders] = useState(initialOrders);
   const [channel, setChannel] = useState("");
   const [status, setStatus] = useState(initialStatus);
@@ -112,13 +115,24 @@ export function OrdersDesk({
     setBusy(null);
     if (!res.ok) {
       setError(data.error ?? "Update failed");
+      toast(data.error ?? "Update failed", "err");
       return;
     }
+    toast("Order updated", "ok");
     await refresh();
     if (selected?.id === id) {
       const detail = await fetch(`/api/orders/${id}`).then((r) => r.json());
       setSelected(detail.order);
     }
+  }
+
+  function exportCsv() {
+    const params = new URLSearchParams();
+    if (channel) params.set("channel", channel);
+    if (status) params.set("status", status);
+    if (q) params.set("q", q);
+    window.location.href = `/api/orders/export?${params}`;
+    toast("Downloading CSV…", "info");
   }
 
   return (
@@ -133,12 +147,17 @@ export function OrdersDesk({
             morning call-backs.
           </p>
         </div>
-        <Button
-          className="rounded-full"
-          onClick={() => setShowEntry((v) => !v)}
-        >
-          {showEntry ? "Close" : "+ Pack parcels"}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" className="rounded-full" onClick={exportCsv}>
+            Export CSV
+          </Button>
+          <Button
+            className="rounded-full"
+            onClick={() => setShowEntry((v) => !v)}
+          >
+            {showEntry ? "Close" : "+ Pack parcels"}
+          </Button>
+        </div>
       </div>
 
       {showEntry ? (
@@ -293,6 +312,12 @@ export function OrdersDesk({
                       >
                         Partial / exchange
                       </Button>
+                      <Link
+                        href={`/print/${order.id}`}
+                        className="inline-flex h-8 items-center rounded-md border border-stone-300 px-2 text-xs hover:bg-stone-50"
+                      >
+                        Slip
+                      </Link>
                     </div>
                   </td>
                 </tr>

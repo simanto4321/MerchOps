@@ -7,13 +7,13 @@ export const SESSION_COOKIE = "merchops_user_id";
 export async function getCurrentUser() {
   const jar = await cookies();
   const userId = jar.get(SESSION_COOKIE)?.value;
-  if (!userId) {
-    return prisma.user.findFirst({ where: { role: "ADMIN" } });
-  }
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user) {
-    return prisma.user.findFirst({ where: { role: "ADMIN" } });
-  }
+  if (!userId) return null;
+  return prisma.user.findUnique({ where: { id: userId } });
+}
+
+export async function requireUser() {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("UNAUTHORIZED");
   return user;
 }
 
