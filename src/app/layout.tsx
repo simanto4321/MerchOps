@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
-import { DM_Sans, Fraunces, Noto_Sans_Bengali } from "next/font/google";
+import { Fraunces, Manrope, Noto_Sans_Bengali } from "next/font/google";
 import { LanguageProvider } from "@/lib/i18n/provider";
 import { ToastProvider } from "@/components/toast";
 import "./globals.css";
 
-const body = DM_Sans({
+/** Body / UI — clean geometric sans; reads well in black on light panels */
+const body = Manrope({
   subsets: ["latin"],
   variable: "--font-body",
 });
 
+/** Brand + headlines — soft serif; suits industrial premium look */
 const display = Fraunces({
   subsets: ["latin"],
   variable: "--font-display",

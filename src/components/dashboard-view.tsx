@@ -24,8 +24,8 @@ export function DashboardView({
 
   return (
     <div className="space-y-8">
-      {/* Premium ops banner — same warehouse language as landing */}
-      <section className="rise-in relative isolate overflow-hidden rounded-2xl border border-teal-900/20 shadow-[0_18px_50px_-28px_rgba(12,42,38,0.55)]">
+      {/* Warehouse banner — light wash so black type stays readable */}
+      <section className="rise-in relative isolate overflow-hidden rounded-2xl border border-stone-200/80 shadow-[0_18px_50px_-28px_rgba(12,42,38,0.45)]">
         <Image
           src="/images/warehouse-hero.jpg"
           alt=""
@@ -36,21 +36,17 @@ export function DashboardView({
           aria-hidden
         />
         <div
-          className="absolute inset-0 bg-gradient-to-r from-[#041916]/94 via-[#0c2a26]/88 to-[#0c2a26]/55"
-          aria-hidden
-        />
-        <div
-          className="absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:40px_40px]"
+          className="absolute inset-0 bg-gradient-to-r from-white/92 via-white/78 to-white/35"
           aria-hidden
         />
         <div className="relative z-10 px-5 py-8 sm:px-7 sm:py-10">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#f0b429]/90">
+          <p className="font-[family-name:var(--font-body)] text-[11px] font-bold uppercase tracking-[0.18em] text-[#0c1210]">
             {t.brand}
           </p>
-          <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl text-teal-50 sm:text-4xl">
+          <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl text-[#0c1210] sm:text-4xl">
             {d.title}
           </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-teal-100/75">
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#0c1210]/75">
             {d.subtitle}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
@@ -60,16 +56,10 @@ export function DashboardView({
             >
               {t.nav.orders}
             </Link>
-            <Link
-              href="/inbox"
-              className="inline-flex items-center rounded-md border border-white/25 bg-white/5 px-4 py-2 text-xs font-semibold text-teal-50 backdrop-blur transition hover:bg-white/10"
-            >
+            <Link href="/inbox" className="ghost-btn-light">
               {t.nav.inbox}
             </Link>
-            <Link
-              href="/inventory"
-              className="inline-flex items-center rounded-md border border-white/25 bg-white/5 px-4 py-2 text-xs font-semibold text-teal-50 backdrop-blur transition hover:bg-white/10"
-            >
+            <Link href="/inventory" className="ghost-btn-light">
               {t.nav.inventory}
             </Link>
           </div>
