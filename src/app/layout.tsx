@@ -1,44 +1,49 @@
 import type { Metadata } from "next";
-import { Figtree, JetBrains_Mono, Newsreader } from "next/font/google";
+import { DM_Sans, Fraunces } from "next/font/google";
+import { AppShell } from "@/components/app-shell";
+import { getCurrentUser } from "@/lib/session";
 import "./globals.css";
-import { SiteNav } from "@/components/SiteNav";
 
-const display = Newsreader({
-  subsets: ["latin"],
-  variable: "--font-display",
-  weight: ["400", "500", "600", "700"],
-});
-
-const body = Figtree({
+const body = DM_Sans({
   subsets: ["latin"],
   variable: "--font-body",
-  weight: ["400", "500", "600", "700"],
 });
 
-const mono = JetBrains_Mono({
+const display = Fraunces({
   subsets: ["latin"],
-  variable: "--font-mono",
-  weight: ["400", "500"],
+  variable: "--font-display",
 });
 
 export const metadata: Metadata = {
-  title: "Mehedi Ashraf Simanto · Evaluation Specialist CV",
+  title: "MerchOps — Inventory & Order Desk",
   description:
-    "CV and project portfolio tailored for the micro1 Evaluation Specialist / Recent Grad role — LLM evaluation, multi-step Q&A design, source triangulation.",
+    "Centralized inventory, multi-channel orders, partial deliveries, and immutable audit logs.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getCurrentUser();
+
   return (
     <html lang="en">
-      <body
-        className={`${display.variable} ${body.variable} ${mono.variable} antialiased`}
-      >
-        <SiteNav />
-        {children}
+      <body className={`${body.variable} ${display.variable} antialiased`}>
+        <AppShell
+          user={
+            user
+              ? {
+                  id: user.id,
+                  name: user.name,
+                  email: user.email,
+                  role: user.role,
+                }
+              : null
+          }
+        >
+          {children}
+        </AppShell>
       </body>
     </html>
   );
