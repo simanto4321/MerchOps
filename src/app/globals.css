@@ -3,11 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --background: #e4ecea;
+  --background: #eef3f1;
   --foreground: #0f1c1a;
-  --panel: #ffffff;
   --ink: #0c2a26;
-  --accent: #0f766e;
   --gold: #f0b429;
 }
 
@@ -20,9 +18,8 @@ body {
 body {
   color: var(--foreground);
   background:
-    radial-gradient(ellipse 80% 50% at 0% -10%, rgba(15, 118, 110, 0.14), transparent 55%),
-    radial-gradient(ellipse 55% 40% at 100% 0%, rgba(15, 42, 38, 0.08), transparent 50%),
-    linear-gradient(165deg, #d9e5e2 0%, #e4ecea 42%, #d3dfdc 100%);
+    radial-gradient(ellipse 70% 40% at 100% -10%, rgba(12, 42, 38, 0.06), transparent 50%),
+    linear-gradient(180deg, #e8efed 0%, #eef3f1 40%, #e3ebe8 100%);
   font-family: var(--font-body), var(--font-bengali), system-ui, sans-serif;
 }
 
@@ -40,51 +37,17 @@ a {
 }
 
 .landing-root {
-  background: #041916;
+  background: #031512;
 }
 
 .app-shell-aside {
-  background:
-    linear-gradient(175deg, #0c2a26 0%, #071f1c 55%, #0a2420 100%);
-}
-
-.metric-shine {
-  position: relative;
-  overflow: hidden;
-}
-
-.metric-shine::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    120deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.35) 48%,
-    transparent 62%
-  );
-  transform: translateX(-120%);
-  animation: sheen 4.5s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes sheen {
-  0%,
-  70% {
-    transform: translateX(-120%);
-  }
-  85% {
-    transform: translateX(120%);
-  }
-  100% {
-    transform: translateX(120%);
-  }
+  background: linear-gradient(180deg, #0c2a26 0%, #08201c 100%);
 }
 
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -93,14 +56,14 @@ a {
 }
 
 .rise-in {
-  animation: rise-in 0.55s ease-out both;
+  animation: rise-in 0.45s ease-out both;
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #7a9490;
+  background: #8aa19c;
   border-radius: 999px;
 }

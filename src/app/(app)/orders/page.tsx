@@ -4,7 +4,12 @@ import { parseTags } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-export default async function OrdersPage() {
+export default async function OrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; status?: string; new?: string }>;
+}) {
+  const params = await searchParams;
   const [orders, products] = await Promise.all([
     prisma.order.findMany({
       where: { mergedIntoId: null },
@@ -31,6 +36,9 @@ export default async function OrdersPage() {
         createdAt: o.createdAt.toISOString(),
       }))}
       products={products}
+      initialQ={params.q ?? ""}
+      initialStatus={params.status ?? ""}
+      initialShowEntry={params.new === "1"}
     />
   );
 }

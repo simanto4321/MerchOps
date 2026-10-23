@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export function MetricCard({
@@ -5,31 +6,41 @@ export function MetricCard({
   value,
   hint,
   tone = "default",
-  shine = false,
+  href,
 }: {
   label: string;
   value: string;
   hint?: string;
   tone?: "default" | "warn" | "good" | "bad";
-  shine?: boolean;
+  href?: string;
 }) {
-  return (
-    <div
-      className={cn(
-        "rise-in rounded-2xl border border-stone-200/90 bg-white/90 p-4 shadow-[0_10px_30px_-18px_rgba(12,42,38,0.45)] backdrop-blur",
-        shine && "metric-shine",
-        tone === "warn" && "border-amber-300/70 bg-amber-50/70",
-        tone === "good" && "border-emerald-300/70 bg-emerald-50/50",
-        tone === "bad" && "border-rose-300/70 bg-rose-50/50",
-      )}
-    >
-      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-500">
+  const className = cn(
+    "block rounded-2xl border border-stone-200 bg-white p-4 transition",
+    href && "hover:border-teal-700/35 hover:shadow-sm",
+    tone === "warn" && "border-amber-200 bg-amber-50/50",
+    tone === "good" && "border-emerald-200 bg-emerald-50/40",
+    tone === "bad" && "border-rose-200 bg-rose-50/40",
+  );
+
+  const inner = (
+    <>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-stone-500">
         {label}
       </p>
       <p className="mt-2 font-[family-name:var(--font-display)] text-2xl tracking-tight text-stone-900">
         {value}
       </p>
       {hint ? <p className="mt-1 text-xs text-stone-500">{hint}</p> : null}
-    </div>
+    </>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className={className}>
+        {inner}
+      </Link>
+    );
+  }
+
+  return <div className={className}>{inner}</div>;
 }

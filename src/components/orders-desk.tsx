@@ -53,19 +53,25 @@ const statuses = Object.keys(STATUS_LABELS);
 export function OrdersDesk({
   initialOrders,
   products,
+  initialQ = "",
+  initialStatus = "",
+  initialShowEntry = false,
 }: {
   initialOrders: Order[];
   products: Product[];
+  initialQ?: string;
+  initialStatus?: string;
+  initialShowEntry?: boolean;
 }) {
   const router = useRouter();
   const [orders, setOrders] = useState(initialOrders);
   const [channel, setChannel] = useState("");
-  const [status, setStatus] = useState("");
-  const [q, setQ] = useState("");
+  const [status, setStatus] = useState(initialStatus);
+  const [q, setQ] = useState(initialQ);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Order | null>(null);
-  const [showEntry, setShowEntry] = useState(false);
+  const [showEntry, setShowEntry] = useState(initialShowEntry);
 
   const filtered = useMemo(() => {
     return orders.filter((o) => {
@@ -116,15 +122,18 @@ export function OrdersDesk({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-[family-name:var(--font-display)] text-3xl text-stone-900">
-            Order desk
+            Orders
           </h1>
           <p className="mt-1 text-sm text-stone-600">
-            Filter by channel and status. Inline comments for morning follow-ups.
-            Partial / exchange returns stock automatically.
+            Search phone or order ID. Change status in the row. Use comments for
+            morning call-backs.
           </p>
         </div>
-        <Button onClick={() => setShowEntry((v) => !v)}>
-          {showEntry ? "Close entry" : "Quick order entry"}
+        <Button
+          className="rounded-full"
+          onClick={() => setShowEntry((v) => !v)}
+        >
+          {showEntry ? "Close" : "+ Pack parcels"}
         </Button>
       </div>
 
