@@ -129,7 +129,7 @@ export function DashboardView({
             value={String(m.monthlyOrderCount)}
           />
           <MetricCard
-            href="/orders?status=PENDING"
+            href="/orders?status=WAITING"
             label={d.pending}
             value={String(m.pendingCount)}
             tone={m.pendingCount > 0 ? "warn" : "good"}

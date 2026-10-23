@@ -12,7 +12,10 @@ import type { DeliveryStatus, SourceChannel } from "@/lib/types";
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const channel = searchParams.get("channel") as SourceChannel | null;
-  const status = searchParams.get("status") as DeliveryStatus | null;
+  const status = searchParams.get("status") as
+    | DeliveryStatus
+    | "WAITING"
+    | null;
   const q = searchParams.get("q") ?? undefined;
   const from = searchParams.get("from");
   const to = searchParams.get("to");

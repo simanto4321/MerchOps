@@ -34,6 +34,8 @@ export function AppShell({
   const { t } = useI18n();
   const [q, setQ] = useState("");
 
+  const isAdmin = user?.role === "ADMIN";
+
   const daily = [
     { href: "/dashboard", label: t.nav.dashboard, icon: LayoutDashboard },
     { href: "/orders", label: t.nav.orders, icon: ClipboardList },
@@ -41,12 +43,14 @@ export function AppShell({
     { href: "/inventory", label: t.nav.inventory, icon: Boxes },
   ];
 
-  const admin = [
-    { href: "/couriers", label: t.nav.deliveries, icon: Truck },
-    { href: "/analytics", label: t.nav.analytics, icon: LineChart },
-    { href: "/audit", label: t.nav.audit, icon: Shield },
-    { href: "/settings", label: t.nav.settings, icon: Settings },
-  ];
+  const admin = isAdmin
+    ? [
+        { href: "/couriers", label: t.nav.deliveries, icon: Truck },
+        { href: "/analytics", label: t.nav.analytics, icon: LineChart },
+        { href: "/audit", label: t.nav.audit, icon: Shield },
+        { href: "/settings", label: t.nav.settings, icon: Settings },
+      ]
+    : [];
 
   function isActive(href: string) {
     return href === "/dashboard"
@@ -106,16 +110,18 @@ export function AppShell({
               ))}
             </nav>
           </div>
-          <div>
-            <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-teal-200/45">
-              {t.nav.groupAdmin}
-            </p>
-            <nav className="space-y-1">
-              {admin.map((item) => (
-                <NavLink key={item.href} {...item} />
-              ))}
-            </nav>
-          </div>
+          {admin.length > 0 ? (
+            <div>
+              <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-teal-200/45">
+                {t.nav.groupAdmin}
+              </p>
+              <nav className="space-y-1">
+                {admin.map((item) => (
+                  <NavLink key={item.href} {...item} />
+                ))}
+              </nav>
+            </div>
+          ) : null}
         </div>
 
         <div className="border-t border-white/10 px-3 py-4">

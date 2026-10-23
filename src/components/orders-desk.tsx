@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -76,7 +76,11 @@ export function OrdersDesk({
   const filtered = useMemo(() => {
     return orders.filter((o) => {
       if (channel && o.sourceChannel !== channel) return false;
-      if (status && o.deliveryStatus !== status) return false;
+      if (status === "WAITING") {
+        if (!["PENDING", "IN_PROGRESS"].includes(o.deliveryStatus)) return false;
+      } else if (status && o.deliveryStatus !== status) {
+        return false;
+      }
       if (q) {
         const hay = `${o.orderNumber} ${o.customerName} ${o.customerPhone} ${o.adminComments ?? ""} ${o.reasonCode ?? ""}`.toLowerCase();
         if (!hay.includes(q.toLowerCase())) return false;
@@ -171,6 +175,7 @@ export function OrdersDesk({
           onChange={(e) => setStatus(e.target.value)}
         >
           <option value="">All statuses</option>
+          <option value="WAITING">Waiting (Pending + In Progress)</option>
           {statuses.map((s) => (
             <option key={s} value={s}>
               {STATUS_LABELS[s]}
@@ -356,6 +361,7 @@ function OrderDetailPanel({
 }) {
   const [reasonCode, setReasonCode] = useState(order.reasonCode ?? "");
   const [comments, setComments] = useState(order.adminComments ?? "");
+  const [tagsText, setTagsText] = useState(order.tags.join(", "));
   const [items, setItems] = useState(
     order.items.map((i) => ({
       orderItemId: i.id,
@@ -366,6 +372,45 @@ function OrderDetailPanel({
     })),
   );
   const [mergeId, setMergeId] = useState("");
+  const [couriers, setCouriers] = useState<
+    { id: string; displayName: string; status: string }[]
+  >([]);
+  const [courierId, setCourierId] = useState("");
+  const [shipMsg, setShipMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/delivery-connections")
+      .then((r) => (r.ok ? r.json() : { connections: [] }))
+      .then((data) => {
+        const list = (data.connections ?? []).filter(
+          (c: { status: string }) => c.status === "CONNECTED",
+        );
+        setCouriers(list);
+      })
+      .catch(() => setCouriers([]));
+  }, []);
+
+  async function shipWithCourier() {
+    if (!courierId) return;
+    setShipMsg(null);
+    const res = await fetch(`/api/delivery-connections/${courierId}/ship`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId: order.id }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setShipMsg(data.error ?? "Ship failed");
+      return;
+    }
+    setShipMsg(data.message ?? "Shipped");
+    onPatch({
+      action: "status",
+      deliveryStatus: "IN_PROGRESS",
+      adminComments: comments,
+      reasonCode,
+    });
+  }
 
   return (
     <div className="fixed inset-0 z-40 flex items-end justify-center bg-stone-900/40 p-4 sm:items-center">
@@ -401,6 +446,16 @@ function OrderDetailPanel({
               ))}
             </select>
           </label>
+          <label className="text-sm">
+            <span className="mb-1 block text-xs text-stone-500">
+              Tags (comma-separated)
+            </span>
+            <Input
+              value={tagsText}
+              onChange={(e) => setTagsText(e.target.value)}
+              placeholder="vip, dhaka, follow-up"
+            />
+          </label>
           <label className="text-sm sm:col-span-2">
             <span className="mb-1 block text-xs text-stone-500">Side comments</span>
             <Textarea
@@ -424,7 +479,57 @@ function OrderDetailPanel({
           >
             Save comments
           </Button>
+          <Button
+            variant="secondary"
+            disabled={busy}
+            onClick={() =>
+              onPatch({
+                action: "edit",
+                tags: tagsText
+                  .split(",")
+                  .map((t) => t.trim())
+                  .filter(Boolean),
+                adminComments: comments,
+                reasonCode,
+              })
+            }
+          >
+            Save tags
+          </Button>
         </div>
+
+        <h3 className="mt-6 text-sm font-semibold uppercase tracking-wide text-stone-500">
+          Ship with courier
+        </h3>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <select
+            className="h-9 min-w-[180px] flex-1 rounded-md border border-stone-300 bg-white px-2 text-sm"
+            value={courierId}
+            onChange={(e) => setCourierId(e.target.value)}
+          >
+            <option value="">Connected courier…</option>
+            {couriers.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.displayName}
+              </option>
+            ))}
+          </select>
+          <Button
+            variant="outline"
+            disabled={!courierId || busy}
+            onClick={shipWithCourier}
+          >
+            Create consignment
+          </Button>
+        </div>
+        {couriers.length === 0 ? (
+          <p className="mt-1 text-xs text-stone-500">
+            Connect a courier under Couriers (Admin) first.
+          </p>
+        ) : null}
+        {shipMsg ? (
+          <p className="mt-2 text-sm text-teal-800">{shipMsg}</p>
+        ) : null}
 
         <h3 className="mt-6 text-sm font-semibold uppercase tracking-wide text-stone-500">
           Partial / exchange quantities

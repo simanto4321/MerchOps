@@ -12,15 +12,17 @@ function mask(value: string | null | undefined) {
 
 export async function GET() {
   const user = await getCurrentUser();
-  if (!user || !canManageAudit(user.role)) {
-    return NextResponse.json({ error: "Admin only" }, { status: 403 });
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const isAdmin = canManageAudit(user.role);
 
   let connections = await prisma.deliveryConnection.findMany({
     orderBy: { displayName: "asc" },
   });
 
-  if (connections.length === 0) {
+  if (isAdmin && connections.length === 0) {
     await prisma.deliveryConnection.createMany({
       data: COURIER_PRESETS.map((p) => ({
         provider: p.provider,
@@ -34,13 +36,37 @@ export async function GET() {
     });
   }
 
+  // Staff: only connected couriers, no credential fields.
+  if (!isAdmin) {
+    return NextResponse.json({
+      connections: connections
+        .filter((c) => c.status === "CONNECTED")
+        .map((c) => ({
+          id: c.id,
+          provider: c.provider,
+          displayName: c.displayName,
+          status: c.status,
+          lastSyncedAt: c.lastSyncedAt,
+        })),
+      presets: [],
+    });
+  }
+
   return NextResponse.json({
     connections: connections.map((c) => ({
-      ...c,
+      id: c.id,
+      provider: c.provider,
+      displayName: c.displayName,
+      apiBaseUrl: c.apiBaseUrl,
+      storeId: c.storeId,
+      webhookUrl: c.webhookUrl,
+      status: c.status,
+      lastError: c.lastError,
+      lastSyncedAt: c.lastSyncedAt,
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
       apiKeyMasked: mask(c.apiKey),
       apiSecretMasked: mask(c.apiSecret),
-      apiKey: undefined,
-      apiSecret: undefined,
       hasApiKey: Boolean(c.apiKey),
       hasApiSecret: Boolean(c.apiSecret),
     })),

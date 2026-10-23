@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { AccessDenied } from "@/components/access-denied";
 import { AdSpendForm } from "@/components/ad-spend-form";
 import { MetricCard } from "@/components/metric-card";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function AnalyticsPage() {
   const user = await getCurrentUser();
   if (!user || !canViewCosts(user.role)) {
-    redirect("/dashboard");
+    return <AccessDenied />;
   }
 
   const [metrics, products, spends] = await Promise.all([
@@ -28,15 +28,22 @@ export default async function AnalyticsPage() {
     }),
   ]);
 
+  const now = new Date();
+  const monthLabel = now.toLocaleString("en-GB", {
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Dhaka",
+  });
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-[family-name:var(--font-display)] text-3xl">
-          Ad spend & profitability
+          Ads & monthly P&amp;L
         </h1>
         <p className="mt-1 text-sm text-stone-600">
-          Cross-reference campaign spend against factory COGS and retail sales to
-          flag net-loss marketing.
+          {monthLabel} Asia/Dhaka · Campaign spend vs factory COGS and retail
+          sales. Loss flags appear when ads wipe out margin.
         </p>
       </div>
 
@@ -51,9 +58,21 @@ export default async function AnalyticsPage() {
         />
       </div>
 
+      <div className="grid gap-3 sm:grid-cols-2">
+        <MetricCard
+          label="Inventory retail value"
+          value={formatBdt(metrics.inventoryValue)}
+        />
+        <MetricCard
+          label="Factory inventory value"
+          value={formatBdt(metrics.factoryInventoryValue)}
+          hint="True cost basis"
+        />
+      </div>
+
       <AdSpendForm products={products} />
 
-      <section className="overflow-x-auto rounded-xl border border-stone-200 bg-white p-5 shadow-sm">
+      <section className="overflow-x-auto rounded-2xl border border-stone-200 bg-white p-5">
         <h2 className="font-[family-name:var(--font-display)] text-xl">
           Product-level profit flags
         </h2>
@@ -70,51 +89,64 @@ export default async function AnalyticsPage() {
             </tr>
           </thead>
           <tbody>
-            {metrics.adProfitByProduct.map((row) => (
-              <tr key={row.productId} className="border-b border-stone-100">
-                <td className="py-2.5 pr-3">
-                  <div className="font-medium">{row.name}</div>
-                  <div className="text-xs text-stone-500">{row.sku}</div>
-                </td>
-                <td className="py-2.5 pr-3">{row.unitsSold}</td>
-                <td className="py-2.5 pr-3">{formatBdt(row.revenue)}</td>
-                <td className="py-2.5 pr-3">{formatBdt(row.cogs)}</td>
-                <td className="py-2.5 pr-3">{formatBdt(row.spend)}</td>
-                <td className="py-2.5 pr-3">{formatBdt(row.net)}</td>
-                <td className="py-2.5">
-                  {row.lossFlag ? (
-                    <Badge className="bg-rose-100 text-rose-900">Net loss</Badge>
-                  ) : (
-                    <Badge className="bg-emerald-100 text-emerald-900">OK</Badge>
-                  )}
+            {metrics.adProfitByProduct.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="py-6 text-center text-stone-500">
+                  No sales or ad spend this month yet.
                 </td>
               </tr>
-            ))}
+            ) : (
+              metrics.adProfitByProduct.map((row) => (
+                <tr key={row.productId} className="border-b border-stone-100">
+                  <td className="py-2.5 pr-3">
+                    <div className="font-medium">{row.name}</div>
+                    <div className="text-xs text-stone-500">{row.sku}</div>
+                  </td>
+                  <td className="py-2.5 pr-3">{row.unitsSold}</td>
+                  <td className="py-2.5 pr-3">{formatBdt(row.revenue)}</td>
+                  <td className="py-2.5 pr-3">{formatBdt(row.cogs)}</td>
+                  <td className="py-2.5 pr-3">{formatBdt(row.spend)}</td>
+                  <td className="py-2.5 pr-3">{formatBdt(row.net)}</td>
+                  <td className="py-2.5">
+                    {row.lossFlag ? (
+                      <Badge className="bg-rose-100 text-rose-900">Net loss</Badge>
+                    ) : (
+                      <Badge className="bg-emerald-100 text-emerald-900">OK</Badge>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </section>
 
-      <section className="rounded-xl border border-stone-200 bg-white p-5 shadow-sm">
+      <section className="rounded-2xl border border-stone-200 bg-white p-5">
         <h2 className="font-[family-name:var(--font-display)] text-xl">
           Recent ad spend entries
         </h2>
-        <ul className="mt-3 space-y-2 text-sm">
-          {spends.map((s) => (
-            <li
-              key={s.id}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-stone-100 bg-stone-50/80 px-3 py-2"
-            >
-              <div>
-                <div className="font-medium">{s.campaignName}</div>
-                <div className="text-xs text-stone-500">
-                  {s.product?.name ?? "General"} ·{" "}
-                  {s.spentAt.toLocaleString("en-GB", { timeZone: "Asia/Dhaka" })} Asia/Dhaka
+        {spends.length === 0 ? (
+          <p className="mt-3 text-sm text-stone-500">No ad spend logged yet.</p>
+        ) : (
+          <ul className="mt-3 space-y-2 text-sm">
+            {spends.map((s) => (
+              <li
+                key={s.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-stone-100 bg-stone-50/80 px-3 py-2"
+              >
+                <div>
+                  <div className="font-medium">{s.campaignName}</div>
+                  <div className="text-xs text-stone-500">
+                    {s.product?.name ?? "General"} ·{" "}
+                    {s.spentAt.toLocaleString("en-GB", { timeZone: "Asia/Dhaka" })}{" "}
+                    Asia/Dhaka
+                  </div>
                 </div>
-              </div>
-              <div className="font-medium">{formatBdt(s.amount)}</div>
-            </li>
-          ))}
-        </ul>
+                <div className="font-medium">{formatBdt(s.amount)}</div>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );

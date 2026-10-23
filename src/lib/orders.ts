@@ -4,9 +4,15 @@ import { writeAuditLog } from "./audit";
 import { stringifyTags } from "./utils";
 import type { DeliveryStatus, SourceChannel } from "./types";
 
-export async function nextOrderNumber() {
-  const count = await prisma.order.count();
-  return `ORD-${1001 + count}`;
+export async function nextOrderNumber(tx?: Prisma.TransactionClient) {
+  const client = tx ?? prisma;
+  const latest = await client.order.findFirst({
+    orderBy: { orderNumber: "desc" },
+    select: { orderNumber: true },
+  });
+  const match = latest?.orderNumber.match(/ORD-(\d+)/);
+  const next = match ? Number(match[1]) + 1 : 1001;
+  return `ORD-${next}`;
 }
 
 export async function createOrder(params: {
@@ -42,9 +48,9 @@ export async function createOrder(params: {
   });
 
   const totalAmount = lineItems.reduce((s, i) => s + i.lineTotal, 0);
-  const orderNumber = await nextOrderNumber();
 
   const order = await prisma.$transaction(async (tx) => {
+    const orderNumber = await nextOrderNumber(tx);
     for (const item of lineItems) {
       const product = products.find((p) => p.id === item.productId)!;
       if (product.stockQuantity < item.orderedQuantity) {
@@ -342,7 +348,8 @@ export async function mergeOrders(params: {
 
 export type OrderListFilters = {
   channel?: SourceChannel;
-  status?: DeliveryStatus;
+  /** Delivery status, or WAITING (= PENDING + IN_PROGRESS) */
+  status?: DeliveryStatus | "WAITING";
   q?: string;
   from?: Date;
   to?: Date;
@@ -351,7 +358,11 @@ export type OrderListFilters = {
 export function buildOrderWhere(filters: OrderListFilters): Prisma.OrderWhereInput {
   const where: Prisma.OrderWhereInput = { mergedIntoId: null };
   if (filters.channel) where.sourceChannel = filters.channel;
-  if (filters.status) where.deliveryStatus = filters.status;
+  if (filters.status === "WAITING") {
+    where.deliveryStatus = { in: ["PENDING", "IN_PROGRESS"] };
+  } else if (filters.status) {
+    where.deliveryStatus = filters.status;
+  }
   if (filters.from || filters.to) {
     where.createdAt = {};
     if (filters.from) where.createdAt.gte = filters.from;
