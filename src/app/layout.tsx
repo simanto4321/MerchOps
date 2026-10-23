@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { DM_Sans, Fraunces } from "next/font/google";
-import { AppShell } from "@/components/app-shell";
-import { getCurrentUser } from "@/lib/session";
+import { DM_Sans, Fraunces, Noto_Sans_Bengali } from "next/font/google";
+import { LanguageProvider } from "@/lib/i18n/provider";
 import "./globals.css";
 
 const body = DM_Sans({
@@ -14,36 +13,29 @@ const display = Fraunces({
   variable: "--font-display",
 });
 
+const bengali = Noto_Sans_Bengali({
+  subsets: ["bengali"],
+  variable: "--font-bengali",
+  weight: ["400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
   title: "MerchOps — Inventory & Order Desk",
   description:
-    "Centralized inventory, multi-channel orders, partial deliveries, and immutable audit logs.",
+    "Centralized inventory, multi-channel orders, courier APIs, and immutable audit logs for Bangladesh retail.",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getCurrentUser();
-
   return (
     <html lang="en">
-      <body className={`${body.variable} ${display.variable} antialiased`}>
-        <AppShell
-          user={
-            user
-              ? {
-                  id: user.id,
-                  name: user.name,
-                  email: user.email,
-                  role: user.role,
-                }
-              : null
-          }
-        >
-          {children}
-        </AppShell>
+      <body
+        className={`${body.variable} ${display.variable} ${bengali.variable} antialiased`}
+      >
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function AnalyticsPage() {
   const user = await getCurrentUser();
   if (!user || !canViewCosts(user.role)) {
-    redirect("/");
+    redirect("/dashboard");
   }
 
   const [metrics, products, spends] = await Promise.all([

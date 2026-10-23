@@ -46,3 +46,4 @@ github-updates/repos/
 # prisma
 /prisma/*.db
 /prisma/*.db-journal
+test-screenshots/

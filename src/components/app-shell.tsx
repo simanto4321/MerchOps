@@ -10,19 +10,13 @@ import {
   LineChart,
   Shield,
   Settings,
+  Truck,
+  Home,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RoleSwitcher } from "./role-switcher";
-
-const nav = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/orders", label: "Orders", icon: ClipboardList },
-  { href: "/inbox", label: "Inbox", icon: Inbox },
-  { href: "/inventory", label: "Inventory", icon: Boxes },
-  { href: "/analytics", label: "Ad Spend", icon: LineChart },
-  { href: "/audit", label: "Audit Logs", icon: Shield },
-  { href: "/settings", label: "Settings", icon: Settings },
-];
+import { LanguageToggleLight } from "./language-toggle";
+import { useI18n } from "@/lib/i18n/provider";
 
 export function AppShell({
   children,
@@ -32,23 +26,35 @@ export function AppShell({
   user: { id: string; name: string; email: string; role: string } | null;
 }) {
   const pathname = usePathname();
+  const { t } = useI18n();
+
+  const nav = [
+    { href: "/dashboard", label: t.nav.dashboard, icon: LayoutDashboard },
+    { href: "/orders", label: t.nav.orders, icon: ClipboardList },
+    { href: "/inbox", label: t.nav.inbox, icon: Inbox },
+    { href: "/inventory", label: t.nav.inventory, icon: Boxes },
+    { href: "/couriers", label: t.nav.deliveries, icon: Truck },
+    { href: "/analytics", label: t.nav.analytics, icon: LineChart },
+    { href: "/audit", label: t.nav.audit, icon: Shield },
+    { href: "/settings", label: t.nav.settings, icon: Settings },
+  ];
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[240px_1fr]">
-      <aside className="border-b border-stone-200 bg-[#0f2f2a] text-stone-100 lg:border-b-0 lg:border-r lg:border-teal-950">
-        <div className="px-5 py-6">
-          <p className="font-[family-name:var(--font-display)] text-2xl tracking-tight text-teal-50">
-            MerchOps
-          </p>
-          <p className="mt-1 text-xs text-teal-200/80">
-            Inventory · Orders · Audit
-          </p>
+    <div className="min-h-screen lg:grid lg:grid-cols-[260px_1fr]">
+      <aside className="app-shell-aside border-b border-teal-950 text-stone-100 lg:border-b-0 lg:border-r lg:border-teal-950/80">
+        <div className="px-5 py-7">
+          <Link href="/" className="block">
+            <p className="font-[family-name:var(--font-display)] text-2xl tracking-tight text-teal-50">
+              {t.brand}
+            </p>
+            <p className="mt-1 text-xs text-teal-200/70">{t.brandTag}</p>
+          </Link>
         </div>
         <nav className="flex gap-1 overflow-x-auto px-3 pb-4 lg:flex-col lg:overflow-visible">
           {nav.map((item) => {
             const active =
-              item.href === "/"
-                ? pathname === "/"
+              item.href === "/dashboard"
+                ? pathname === "/dashboard"
                 : pathname.startsWith(item.href);
             const Icon = item.icon;
             return (
@@ -56,31 +62,39 @@ export function AppShell({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm whitespace-nowrap transition-colors",
+                  "flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm whitespace-nowrap transition-all duration-200",
                   active
-                    ? "bg-teal-700/50 text-white"
-                    : "text-teal-100/75 hover:bg-teal-900/60 hover:text-white",
+                    ? "bg-teal-50/15 text-white shadow-[inset_3px_0_0_0_#f0b429]"
+                    : "text-teal-100/70 hover:bg-white/5 hover:text-white",
                 )}
               >
-                <Icon className="h-4 w-4 shrink-0" />
+                <Icon className="h-4 w-4 shrink-0 opacity-90" />
                 {item.label}
               </Link>
             );
           })}
+          <Link
+            href="/"
+            className="mt-2 flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-teal-200/50 hover:text-teal-100"
+          >
+            <Home className="h-3.5 w-3.5" />
+            {t.nav.home}
+          </Link>
         </nav>
       </aside>
 
       <div className="flex min-w-0 flex-col">
-        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 bg-white/80 px-4 py-3 backdrop-blur sm:px-6">
+        <header className="sticky top-0 z-30 flex flex-wrap items-center justify-between gap-3 border-b border-stone-200/80 bg-white/75 px-4 py-3 backdrop-blur-md sm:px-6">
           <div>
-            <p className="text-sm font-medium text-stone-900">
-              Centralized order & inventory desk
+            <p className="text-sm font-semibold tracking-tight text-stone-900">
+              {t.shell.title}
             </p>
-            <p className="text-xs text-stone-500">
-              Multi-channel retail ops · Bangladesh BDT
-            </p>
+            <p className="text-xs text-stone-500">{t.shell.subtitle}</p>
           </div>
-          <RoleSwitcher user={user} />
+          <div className="flex flex-wrap items-center gap-2">
+            <LanguageToggleLight />
+            <RoleSwitcher user={user} />
+          </div>
         </header>
         <main className="flex-1 px-4 py-6 sm:px-6">{children}</main>
       </div>

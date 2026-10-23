@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.deliveryConnection.deleteMany();
   await prisma.inboxMessage.deleteMany();
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
@@ -265,6 +266,47 @@ async function main() {
         body: "Want to exchange hoodie size XL → L",
         status: "OPEN",
         tags: JSON.stringify(["exchange"]),
+      },
+    ],
+  });
+
+  await prisma.deliveryConnection.createMany({
+    data: [
+      {
+        provider: "PATHAO",
+        displayName: "Pathao Parcel",
+        apiBaseUrl: "https://api-hermes.pathao.com",
+        status: "DISCONNECTED",
+      },
+      {
+        provider: "STEADFAST",
+        displayName: "Steadfast",
+        apiBaseUrl: "https://portal.packzy.com/api/v1",
+        status: "DISCONNECTED",
+      },
+      {
+        provider: "REDX",
+        displayName: "RedX",
+        apiBaseUrl: "https://openapi.redx.com.bd",
+        status: "DISCONNECTED",
+      },
+      {
+        provider: "SUNDARBAN",
+        displayName: "Sundarban Courier",
+        apiBaseUrl: "https://api.sundarbancourier.com",
+        status: "DISCONNECTED",
+      },
+      {
+        provider: "PAPERFLY",
+        displayName: "Paperfly",
+        apiBaseUrl: "https://api.paperfly.com.bd",
+        status: "DISCONNECTED",
+      },
+      {
+        provider: "ECOURIER",
+        displayName: "eCourier",
+        apiBaseUrl: "https://backoffice.ecourier.com.bd/api",
+        status: "DISCONNECTED",
       },
     ],
   });

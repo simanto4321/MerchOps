@@ -17,7 +17,11 @@ npm run db:seed
 npm run dev
 ```
 
-Open [http://127.0.0.1:4317](http://127.0.0.1:4317).
+Open [http://127.0.0.1:4317](http://127.0.0.1:4317) (landing). Ops desk: [http://127.0.0.1:4317/dashboard](http://127.0.0.1:4317/dashboard).
+
+**Language:** EN / বাংলা toggle in the header (landing + desk). Preference is saved in the browser.
+
+**Courier APIs:** Admin → [Couriers](http://127.0.0.1:4317/couriers) — connect Pathao, Steadfast, RedX, Sundarban, Paperfly, eCourier (API key / secret / store ID, test & disconnect).
 
 ### PostgreSQL (production)
 

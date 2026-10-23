@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function AuditPage() {
   const user = await getCurrentUser();
   if (!user || !canManageAudit(user.role)) {
-    redirect("/");
+    redirect("/dashboard");
   }
 
   const logs = await prisma.auditLog.findMany({

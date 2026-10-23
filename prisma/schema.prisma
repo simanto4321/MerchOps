@@ -120,3 +120,24 @@ model AppSetting {
   key   String @unique
   value String
 }
+
+/// Courier / last-mile delivery API integrations (Pathao, Steadfast, RedX, …)
+model DeliveryConnection {
+  id             String    @id @default(cuid())
+  /// PATHAO | STEADFAST | REDX | SUNDARBAN | PAPERFLY | ECOURIER | CUSTOM
+  provider       String
+  displayName    String
+  apiBaseUrl     String?
+  apiKey         String?
+  apiSecret      String?
+  storeId        String?
+  webhookUrl     String?
+  status         String    @default("DISCONNECTED") // DISCONNECTED | CONNECTED | ERROR | TESTING
+  lastError      String?
+  lastSyncedAt   DateTime?
+  configJson     String    @default("{}")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([provider])
+}
