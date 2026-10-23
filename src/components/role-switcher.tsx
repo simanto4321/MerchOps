@@ -25,14 +25,32 @@ export function RoleSwitcher({
 }) {
   const router = useRouter();
   const { t } = useI18n();
-  const [users, setUsers] = useState<UserOption[]>([]);
+  const [users, setUsers] = useState<UserOption[]>(() =>
+    user
+      ? [
+          {
+            id: user.id,
+            name: user.name,
+            role: user.role,
+            username: user.username,
+            email: user.email,
+          },
+        ]
+      : [],
+  );
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     fetch("/api/users")
       .then((r) => r.json())
-      .then((data) => setUsers(data.users ?? []))
-      .catch(() => setUsers([]));
+      .then((data) => {
+        if (!cancelled) setUsers(data.users ?? []);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function switchUser(userId: string) {
@@ -47,10 +65,10 @@ export function RoleSwitcher({
   }
 
   return (
-    <label className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-2.5 py-1.5 text-xs">
+    <label className="flex h-9 items-center gap-2 rounded-xl border border-stone-200 bg-white px-2.5 text-xs">
       <span className="hidden text-stone-500 sm:inline">{t.shell.signedIn}</span>
       <select
-        className="max-w-[140px] bg-transparent text-sm font-medium text-stone-900 outline-none sm:max-w-[180px]"
+        className="h-8 min-w-[148px] max-w-[180px] bg-transparent text-sm font-medium text-stone-900 outline-none"
         disabled={busy || users.length === 0}
         value={user?.id ?? ""}
         onChange={(e) => switchUser(e.target.value)}

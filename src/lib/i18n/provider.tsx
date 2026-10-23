@@ -11,6 +11,7 @@ import {
 import { dictionaries, type Dictionary, type Locale } from "./dictionaries";
 
 const STORAGE_KEY = "merchops_locale";
+const COOKIE_KEY = "merchops_locale";
 
 type I18nContextValue = {
   locale: Locale;
@@ -21,13 +22,25 @@ type I18nContextValue = {
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("en");
+function persistLocale(next: Locale) {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, next);
+  } catch {
+    /* ignore */
+  }
+  document.cookie = `${COOKIE_KEY}=${next};path=/;max-age=31536000;samesite=lax`;
+}
 
-  useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY) as Locale | null;
-    if (saved === "en" || saved === "bn") setLocaleState(saved);
-  }, []);
+export function LanguageProvider({
+  children,
+  initialLocale = "en",
+}: {
+  children: React.ReactNode;
+  initialLocale?: Locale;
+}) {
+  const [locale, setLocaleState] = useState<Locale>(
+    initialLocale === "bn" ? "bn" : "en",
+  );
 
   useEffect(() => {
     document.documentElement.lang = locale === "bn" ? "bn" : "en";
@@ -35,7 +48,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);
-    window.localStorage.setItem(STORAGE_KEY, next);
+    persistLocale(next);
   }, []);
 
   const toggleLocale = useCallback(() => {

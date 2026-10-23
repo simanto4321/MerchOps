@@ -1,89 +1,95 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Link2, ShieldCheck, Workflow } from "lucide-react";
 import { useI18n } from "@/lib/i18n/provider";
 import { LanguageToggle } from "./language-toggle";
 import { COURIER_PRESETS } from "@/lib/couriers";
 
+/**
+ * Landing: text never overlays a loading photo.
+ * Mobile = image strip then solid copy. Desktop = split columns.
+ */
 export function LandingPage() {
   const { t, locale } = useI18n();
   const L = t.landing;
 
   return (
-    <div className="landing-root min-h-screen text-stone-100">
-      <header className="relative z-20 mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-5 sm:px-8">
-        <p className="font-[family-name:var(--font-display)] text-2xl tracking-tight text-teal-50">
-          {t.brand}
-        </p>
-        <nav className="hidden items-center gap-6 text-sm text-teal-100/80 md:flex">
-          <a href="#product" className="hover:text-white">
-            {L.navProduct}
-          </a>
-          <a href="#couriers" className="hover:text-white">
-            {L.navCouriers}
-          </a>
-          <a href="#security" className="hover:text-white">
-            {L.navSecurity}
-          </a>
-        </nav>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <Link
-            href="/login"
-            className="hidden gold-btn sm:inline-flex !rounded-md !px-3 !py-1.5"
-          >
-            {L.ctaApp}
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#041916] text-stone-100">
+      {/* Mobile image strip — separate from text */}
+      <div
+        className="h-44 w-full bg-cover bg-center sm:h-56 lg:hidden"
+        style={{ backgroundImage: "url(/images/warehouse-hero.jpg)" }}
+        aria-hidden
+      />
 
-      <section className="relative isolate min-h-[88vh] overflow-hidden">
-        <Image
-          src="/images/warehouse-hero.jpg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-          aria-hidden
-        />
-        <div
-          className="absolute inset-0 bg-gradient-to-r from-[#041916] via-[#0c2a26]/92 to-[#0c2a26]/50"
-          aria-hidden
-        />
+      <div className="lg:grid lg:min-h-screen lg:grid-cols-2">
+        {/* Solid copy column */}
+        <div className="flex min-h-0 flex-col bg-[#041916]">
+          <header className="flex items-center justify-between gap-4 px-5 py-5 sm:px-8">
+            <p className="font-[family-name:var(--font-display)] text-2xl tracking-tight text-teal-50">
+              {t.brand}
+            </p>
+            <div className="flex items-center gap-2">
+              <LanguageToggle />
+              <Link
+                href="/login"
+                className="hidden gold-btn sm:inline-flex !rounded-md !px-3 !py-1.5"
+              >
+                {L.ctaApp}
+              </Link>
+            </div>
+          </header>
 
-        {/* Text is always visible — no fade/slide that looks like jumping */}
-        <div className="relative z-10 mx-auto flex min-h-[88vh] max-w-6xl flex-col justify-end px-5 pb-16 pt-20 sm:px-8 sm:pb-24 sm:pt-28">
-          <p className="font-[family-name:var(--font-display)] text-5xl leading-none tracking-tight text-teal-50 sm:text-7xl md:text-8xl">
-            {L.heroBrand}
-          </p>
-          <h1 className="mt-6 max-w-2xl text-xl font-medium leading-snug text-teal-50 sm:text-2xl md:text-3xl">
-            {L.heroHeadline}
-          </h1>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-teal-100/80 sm:text-base">
-            {L.heroSub}
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/login" className="gold-btn">
-              {L.heroPrimary}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/login?next=/couriers"
-              className="inline-flex items-center gap-2 rounded-md border border-teal-100/30 bg-black/25 px-5 py-2.5 text-sm font-medium text-teal-50"
-            >
-              {L.heroSecondary}
-            </Link>
+          <div className="flex flex-1 flex-col justify-center px-5 pb-14 pt-6 sm:px-8 sm:pb-20">
+            <nav className="mb-8 hidden gap-6 text-sm text-teal-100/80 md:flex">
+              <a href="#product" className="hover:text-white">
+                {L.navProduct}
+              </a>
+              <a href="#couriers" className="hover:text-white">
+                {L.navCouriers}
+              </a>
+              <a href="#security" className="hover:text-white">
+                {L.navSecurity}
+              </a>
+            </nav>
+
+            <p className="font-[family-name:var(--font-display)] text-5xl leading-none tracking-tight text-teal-50 sm:text-6xl md:text-7xl">
+              {L.heroBrand}
+            </p>
+            <h1 className="mt-6 max-w-xl text-xl font-medium leading-snug text-teal-50 sm:text-2xl">
+              {L.heroHeadline}
+            </h1>
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-teal-100/75 sm:text-base">
+              {L.heroSub}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/login" className="gold-btn">
+                {L.heroPrimary}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/login?next=/couriers"
+                className="inline-flex items-center gap-2 rounded-md border border-teal-100/30 bg-white/5 px-5 py-2.5 text-sm font-medium text-teal-50"
+              >
+                {L.heroSecondary}
+              </Link>
+            </div>
+            <ul className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-xs text-teal-100/70 sm:text-sm">
+              <li>{L.trust1}</li>
+              <li>{L.trust2}</li>
+              <li>{L.trust3}</li>
+            </ul>
           </div>
-          <ul className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-xs text-teal-100/75 sm:text-sm">
-            <li>{L.trust1}</li>
-            <li>{L.trust2}</li>
-            <li>{L.trust3}</li>
-          </ul>
         </div>
-      </section>
+
+        {/* Desktop image column — never under type */}
+        <div
+          className="hidden bg-cover bg-center lg:block"
+          style={{ backgroundImage: "url(/images/warehouse-hero.jpg)" }}
+          aria-hidden
+        />
+      </div>
 
       <section id="product" className="border-t border-teal-900/40 bg-[#071f1c] py-20">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">

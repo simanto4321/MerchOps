@@ -42,7 +42,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <div
             key={t.id}
             className={cn(
-              "pointer-events-auto rounded-xl border px-4 py-3 text-sm shadow-lg backdrop-blur",
+              "pointer-events-auto rounded-xl border px-4 py-3 text-sm shadow-lg",
               t.tone === "ok" && "border-emerald-200 bg-emerald-50 text-emerald-950",
               t.tone === "err" && "border-rose-200 bg-rose-50 text-rose-950",
               t.tone === "info" && "border-stone-200 bg-white text-stone-900",

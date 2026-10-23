@@ -51,7 +51,7 @@ export function DashboardView({
           </div>
         </div>
         <div
-          className="min-h-[180px] bg-cover bg-center md:min-h-full"
+          className="min-h-[160px] bg-cover bg-center md:min-h-[260px]"
           style={{ backgroundImage: "url(/images/warehouse-hero.jpg)" }}
           aria-hidden
         />
