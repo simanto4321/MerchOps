@@ -1,49 +1,58 @@
-# MerchOps — Go-live checklist (next phase)
+# MerchOps — Go-live checklist
 
-Use this after the app features are frozen. Order of work:
+## Already in place (local / this repo)
 
-## 1. Database (PostgreSQL)
+- [x] Frontend desk + marketing UI (Next.js)
+- [x] Backend Route Handlers (`/api/*`) with session gates
+- [x] Prisma database (SQLite default; Postgres schema-compatible)
+- [x] bcrypt-hashed PINs in seed + login verify
+- [x] httpOnly session cookie (`secure` in production)
+- [x] `ALLOW_DEMO_ACCOUNTS` / `ALLOW_ROLE_SWITCH` env gates
+- [x] `docker-compose.yml` for PostgreSQL 16
 
-1. Create a Postgres database (Neon, Supabase, Railway, or Vercel Postgres).
-2. In `.env` / Vercel env:
+## 1. Database (PostgreSQL for production)
+
+1. Create a Postgres database (Neon, Supabase, Railway, or `docker compose up -d`).
+2. Set env:
    ```
    DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/merchops?sslmode=require"
    ```
-3. In `prisma/schema.prisma`, set:
+3. In `prisma/schema.prisma`:
    ```
    provider = "postgresql"
    ```
 4. Run:
    ```bash
-   npx prisma db push
+   npm run db:push
    npm run db:seed
    ```
 
-## 2. Auth hardening
+## 2. Production env
 
-- Replace demo `pin` fields with hashed passwords (`bcrypt`) or Auth.js / Clerk.
-- Set `secure` cookies (already on in production session route).
-- Remove or gate the in-app role switcher for production.
+```
+DATABASE_URL=…
+NEXT_PUBLIC_APP_NAME=MerchOps
+ALLOW_DEMO_ACCOUNTS=false
+ALLOW_ROLE_SWITCH=false
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+```
+
+Change demo PINs after first deploy (re-seed or update `User.pin` with bcrypt hashes).
 
 ## 3. Hosting (Vercel)
 
-1. Import the Git repo into Vercel.
-2. Set env vars: `DATABASE_URL`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `NEXT_PUBLIC_APP_NAME`.
-3. Build command: `prisma generate && next build` (already in `npm run build`).
-4. Add install command note: `npm install` (postinstall runs `prisma generate`).
-5. After deploy, hit `/api/health` — expect `{ ok: true }`.
+1. Import the Git repo.
+2. Set the env vars above.
+3. Build: `npm run build` (`prisma generate && next build`).
+4. Hit `/api/health` — expect `{ ok: true, db: { connected: true, … } }`.
 
 ## 4. Frontend live check
 
 - [ ] `/` landing EN + বাংলা
-- [ ] `/login` with Admin `1234` / Staff `5678`
-- [ ] Dashboard shortcuts + waiting / failed filters
-- [ ] Orders: create, status, comment, tags, partial, merge, CSV, packing slip
-- [ ] Inbox link/close
-- [ ] Inventory stock edit (admin prices)
-- [ ] Couriers connect + ship
-- [ ] Analytics + audit (admin only)
-- [ ] Settings Telegram save
+- [ ] `/login` with Admin / Staff (no quick chips if demo flag off)
+- [ ] Dashboard, orders filters, packing, partial/merge/CSV
+- [ ] Inbox, inventory, couriers, analytics, audit, settings
 - [ ] Mobile bottom nav
 
 ## 5. Couriers & channels (real keys)
@@ -52,9 +61,7 @@ Use this after the app features are frozen. Order of work:
 - Point WhatsApp/IG bots to `POST /api/webhooks/order`.
 - Confirm Telegram chat receives new-order alerts.
 
-## Demo accounts (local / staging only)
-
-Sign in with **username + PIN**. Emails on users are for customer / delivery contact only.
+## Demo accounts (staging only)
 
 | Role  | Username | PIN  |
 |-------|----------|------|

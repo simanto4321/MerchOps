@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { allowDemoAccounts, allowRoleSwitch, appName } from "@/server/config";
 
 export async function GET() {
   try {
@@ -11,8 +12,13 @@ export async function GET() {
     return NextResponse.json({
       ok: true,
       service: "merchops",
+      app: appName,
       time: new Date().toISOString(),
-      db: { users, orders, products },
+      db: { connected: true, users, orders, products },
+      flags: {
+        demoAccounts: allowDemoAccounts(),
+        roleSwitch: allowRoleSwitch(),
+      },
     });
   } catch (error) {
     return NextResponse.json(

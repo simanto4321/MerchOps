@@ -20,7 +20,8 @@ model User {
   email     String     @unique
   /// ADMIN | STAFF | GUEST
   role      String     @default("STAFF")
-  pin       String     @default("0000")
+  /// bcrypt hash of desk PIN (never store plaintext in new seeds)
+  pin       String
   createdAt DateTime   @default(now())
   auditLogs AuditLog[]
   orders    Order[]    @relation("OrderCreatedBy")

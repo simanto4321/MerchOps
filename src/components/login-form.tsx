@@ -127,37 +127,32 @@ export function LoginForm({ nextPath }: { nextPath: string }) {
             </Button>
           </form>
 
-          <div className="mt-7 min-h-[148px] space-y-2">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#0c1210]/50">
-              {locale === "bn" ? "দ্রুত অ্যাকাউন্ট" : "Quick accounts"}
-            </p>
-            {(demos.length > 0
-              ? demos
-              : [
-                  { username: "admin", pin: "1234", role: "ADMIN", name: "" },
-                  { username: "staff", pin: "5678", role: "STAFF", name: "" },
-                  { username: "guest", pin: "0000", role: "GUEST", name: "" },
-                ]
-            ).map((d) => (
-              <button
-                key={d.username}
-                type="button"
-                onClick={() => {
-                  setUsername(d.username);
-                  setPin(d.pin);
-                }}
-                className="flex w-full items-center justify-between rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 text-left text-sm text-[#0c1210] hover:border-[#f0b429]/70"
-              >
-                <span>
-                  <span className="font-semibold">{d.role}</span>
-                  <span className="ml-2 text-[#0c1210]/55">@{d.username}</span>
-                </span>
-                <span className="font-mono text-xs font-semibold text-[#9a6b00]">
-                  {d.pin}
-                </span>
-              </button>
-            ))}
-          </div>
+          {demos.length > 0 ? (
+            <div className="mt-7 space-y-2">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#0c1210]/50">
+                {locale === "bn" ? "দ্রুত অ্যাকাউন্ট" : "Quick accounts"}
+              </p>
+              {demos.map((d) => (
+                <button
+                  key={d.username}
+                  type="button"
+                  onClick={() => {
+                    setUsername(d.username);
+                    setPin(d.pin);
+                  }}
+                  className="flex w-full items-center justify-between rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 text-left text-sm text-[#0c1210] hover:border-[#f0b429]/70"
+                >
+                  <span>
+                    <span className="font-semibold">{d.role}</span>
+                    <span className="ml-2 text-[#0c1210]/55">@{d.username}</span>
+                  </span>
+                  <span className="font-mono text-xs font-semibold text-[#9a6b00]">
+                    {d.pin}
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : null}
         </main>
       </div>
 

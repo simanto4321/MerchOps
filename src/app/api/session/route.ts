@@ -4,38 +4,30 @@ import { prisma } from "@/lib/prisma";
 import { SESSION_COOKIE } from "@/lib/session";
 import { writeAuditLog } from "@/lib/audit";
 import { loginSchema } from "@/lib/validation";
-
-function publicUser(user: {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  role: string;
-}) {
-  return {
-    id: user.id,
-    name: user.name,
-    username: user.username,
-    email: user.email,
-    role: user.role,
-  };
-}
+import { allowRoleSwitch } from "@/server/config";
+import {
+  clearSessionCookie,
+  loginWithUsernamePin,
+  setSessionCookie,
+  toPublicUser,
+} from "@/server/auth";
 
 export async function POST(req: Request) {
   const body = await req.json();
 
-  // Role switcher inside the desk
+  // Role switcher (dev/demo only unless ALLOW_ROLE_SWITCH=true)
   if (body.userId && !body.pin) {
+    if (!allowRoleSwitch()) {
+      return NextResponse.json(
+        { error: "Role switch disabled" },
+        { status: 403 },
+      );
+    }
     const user = await prisma.user.findUnique({ where: { id: body.userId } });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    const jar = await cookies();
-    jar.set(SESSION_COOKIE, user.id, {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-    });
+    await setSessionCookie(user.id);
     await writeAuditLog({
       userId: user.id,
       action: "LOGIN",
@@ -43,7 +35,7 @@ export async function POST(req: Request) {
       entityId: user.id,
       newValue: { role: user.role, via: "switcher" },
     });
-    return NextResponse.json({ user: publicUser(user) });
+    return NextResponse.json({ user: toPublicUser(user) });
   }
 
   const parsed = loginSchema.safeParse(body);
@@ -54,23 +46,18 @@ export async function POST(req: Request) {
     );
   }
 
-  const username = parsed.data.username.trim().toLowerCase();
-  const user = await prisma.user.findUnique({ where: { username } });
-  if (!user || user.pin !== parsed.data.pin) {
+  const user = await loginWithUsernamePin(
+    parsed.data.username,
+    parsed.data.pin,
+  );
+  if (!user) {
     return NextResponse.json(
       { error: "Invalid username or PIN" },
       { status: 401 },
     );
   }
 
-  const jar = await cookies();
-  jar.set(SESSION_COOKIE, user.id, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    secure: process.env.NODE_ENV === "production",
-  });
-
+  await setSessionCookie(user.id);
   await writeAuditLog({
     userId: user.id,
     action: "LOGIN",
@@ -79,7 +66,7 @@ export async function POST(req: Request) {
     newValue: { role: user.role, username: user.username },
   });
 
-  return NextResponse.json({ user: publicUser(user) });
+  return NextResponse.json({ user });
 }
 
 export async function GET() {
@@ -102,7 +89,7 @@ export async function GET() {
 export async function DELETE() {
   const jar = await cookies();
   const id = jar.get(SESSION_COOKIE)?.value;
-  jar.delete(SESSION_COOKIE);
+  await clearSessionCookie();
   if (id) {
     await writeAuditLog({
       userId: id,

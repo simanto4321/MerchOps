@@ -1,22 +1,38 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { allowDemoAccounts, allowRoleSwitch } from "@/server/config";
+import { DEMO_ACCOUNT_HINTS } from "@/server/auth";
+import { getCurrentUser } from "@/lib/session";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const demo = searchParams.get("demo") === "1";
 
   if (demo) {
-    // Sign-in shortcuts — loaded from DB (not hardcoded in the UI)
-    const users = await prisma.user.findMany({
-      orderBy: { role: "asc" },
-      select: {
-        username: true,
-        pin: true,
-        role: true,
-        name: true,
-      },
+    if (!allowDemoAccounts()) {
+      return NextResponse.json({ users: [] });
+    }
+    // Plain PIN hints for local login UI — hashes stay in the database only
+    return NextResponse.json({ users: DEMO_ACCOUNT_HINTS });
+  }
+
+  const me = await getCurrentUser();
+  if (!me) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!allowRoleSwitch() && me.role !== "ADMIN") {
+    return NextResponse.json({
+      users: [
+        {
+          id: me.id,
+          name: me.name,
+          username: me.username,
+          email: me.email,
+          role: me.role,
+        },
+      ],
     });
-    return NextResponse.json({ users });
   }
 
   const users = await prisma.user.findMany({

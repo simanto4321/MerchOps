@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -13,13 +14,19 @@ async function main() {
   await prisma.appSetting.deleteMany();
   await prisma.user.deleteMany();
 
+  const [adminPin, staffPin, guestPin] = await Promise.all([
+    bcrypt.hash("1234", 10),
+    bcrypt.hash("5678", 10),
+    bcrypt.hash("0000", 10),
+  ]);
+
   const admin = await prisma.user.create({
     data: {
       name: "Ayesha Rahman",
       username: "admin",
       email: "admin@merchops.local",
       role: "ADMIN",
-      pin: "1234",
+      pin: adminPin,
     },
   });
   const staff = await prisma.user.create({
@@ -28,7 +35,7 @@ async function main() {
       username: "staff",
       email: "staff@merchops.local",
       role: "STAFF",
-      pin: "5678",
+      pin: staffPin,
     },
   });
   await prisma.user.create({
@@ -37,7 +44,7 @@ async function main() {
       username: "guest",
       email: "guest@merchops.local",
       role: "GUEST",
-      pin: "0000",
+      pin: guestPin,
     },
   });
 
