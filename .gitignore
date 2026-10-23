@@ -50,3 +50,4 @@ test-screenshots/
 smoke-test-screenshots/
 redesign-check/
 final-e2e/
+.env*

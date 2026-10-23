@@ -4,6 +4,12 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
+  const existing = await prisma.user.count();
+  if (existing > 0 && process.env.FORCE_SEED !== "true") {
+    console.log("Seed skipped — database already has users (set FORCE_SEED=true to reseed).");
+    return;
+  }
+
   await prisma.deliveryConnection.deleteMany();
   await prisma.inboxMessage.deleteMany();
   await prisma.orderItem.deleteMany();

@@ -12,6 +12,10 @@ Full-stack ops desk for high-volume Bangladesh retail: multi-channel orders, inv
 
 PINs are stored as **bcrypt hashes**. Sessions use an httpOnly cookie (`merchops_user_id`). Desk APIs require a valid session.
 
+## Live
+
+- Production: [https://merchops-woad.vercel.app](https://merchops-woad.vercel.app)
+
 ## Quick start (local)
 
 ```bash

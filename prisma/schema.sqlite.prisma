@@ -1,0 +1,148 @@
+// MerchOps — Prisma schema
+// Default: SQLite (enums stored as strings for connector compatibility).
+// For PostgreSQL: set provider = "postgresql" and DATABASE_URL; values stay the same.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  name      String
+  /// Login identity (desk sign-in)
+  username  String     @unique
+  /// Contact email for customer / delivery / ops queries (not used to sign in)
+  email     String     @unique
+  /// ADMIN | STAFF | GUEST
+  role      String     @default("STAFF")
+  /// bcrypt hash of desk PIN (never store plaintext in new seeds)
+  pin       String
+  createdAt DateTime   @default(now())
+  auditLogs AuditLog[]
+  orders    Order[]    @relation("OrderCreatedBy")
+}
+
+model Product {
+  id                String      @id @default(cuid())
+  sku               String      @unique
+  name              String
+  costPrice         Float
+  retailPrice       Float
+  stockQuantity     Int         @default(0)
+  factoryCost       Float
+  lowStockThreshold Int         @default(10)
+  updatedAt         DateTime    @updatedAt
+  createdAt         DateTime    @default(now())
+  orderItems        OrderItem[]
+  adSpends          AdSpend[]
+}
+
+model Order {
+  id             String         @id @default(cuid())
+  orderNumber    String         @unique
+  customerName   String
+  customerPhone  String
+  /// INSTAGRAM | WHATSAPP | FACEBOOK | TIKTOK | WEBSITE | PHONE | OTHER
+  sourceChannel  String
+  totalAmount    Float
+  parcelValue    Float          @default(0)
+  /// PENDING | IN_PROGRESS | DELIVERED | FAILED | PARTIAL | EXCHANGE
+  deliveryStatus String         @default("PENDING")
+  reasonCode     String?
+  adminComments  String?
+  tags           String         @default("[]")
+  mergedIntoId   String?
+  mergedInto     Order?         @relation("OrderMerge", fields: [mergedIntoId], references: [id])
+  mergedOrders   Order[]        @relation("OrderMerge")
+  createdById    String?
+  createdBy      User?          @relation("OrderCreatedBy", fields: [createdById], references: [id])
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  items          OrderItem[]
+  inboxMessages  InboxMessage[]
+}
+
+model OrderItem {
+  id               String  @id @default(cuid())
+  orderId          String
+  order            Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId        String
+  product          Product @relation(fields: [productId], references: [id])
+  orderedQuantity  Int
+  acceptedQuantity Int     @default(0)
+  returnedQuantity Int     @default(0)
+  unitPrice        Float
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+  /// LOGIN | PRICE_CHANGE | EDIT_ORDER | STOCK_UPDATE | ...
+  action        String
+  entityType    String?
+  entityId      String?
+  previousValue String?
+  newValue      String?
+  timestamp     DateTime @default(now())
+}
+
+model AdSpend {
+  id           String   @id @default(cuid())
+  campaignName String
+  productId    String?
+  product      Product? @relation(fields: [productId], references: [id])
+  amount       Float
+  currency     String   @default("BDT")
+  spentAt      DateTime @default(now())
+  notes        String?
+  createdAt    DateTime @default(now())
+}
+
+model InboxMessage {
+  id            String   @id @default(cuid())
+  channel       String
+  externalId    String?
+  customerName  String
+  customerPhone String?
+  body          String
+  /// OPEN | LINKED | CLOSED | MERGED
+  status        String   @default("OPEN")
+  orderId       String?
+  order         Order?   @relation(fields: [orderId], references: [id])
+  tags          String   @default("[]")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model AppSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
+
+/// Courier / last-mile delivery API integrations (Pathao, Steadfast, RedX, …)
+model DeliveryConnection {
+  id             String    @id @default(cuid())
+  /// PATHAO | STEADFAST | REDX | SUNDARBAN | PAPERFLY | ECOURIER | CUSTOM
+  provider       String
+  displayName    String
+  apiBaseUrl     String?
+  apiKey         String?
+  apiSecret      String?
+  storeId        String?
+  webhookUrl     String?
+  status         String    @default("DISCONNECTED") // DISCONNECTED | CONNECTED | ERROR | TESTING
+  lastError      String?
+  lastSyncedAt   DateTime?
+  configJson     String    @default("{}")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([provider])
+}
