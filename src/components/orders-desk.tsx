@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -53,6 +53,29 @@ type Order = {
 const channels = Object.keys(CHANNEL_LABELS);
 const statuses = Object.keys(STATUS_LABELS);
 
+type OrderCol =
+  | "order"
+  | "date"
+  | "customer"
+  | "phone"
+  | "channel"
+  | "status"
+  | "parcel"
+  | "comment"
+  | "actions";
+
+const ORDER_COLS: { key: OrderCol; label: string }[] = [
+  { key: "order", label: "Order" },
+  { key: "date", label: "Date" },
+  { key: "customer", label: "Customer" },
+  { key: "phone", label: "Phone" },
+  { key: "channel", label: "Channel" },
+  { key: "status", label: "Status" },
+  { key: "parcel", label: "Parcel" },
+  { key: "comment", label: "Quick comment" },
+  { key: "actions", label: "Actions" },
+];
+
 export function OrdersDesk({
   initialOrders,
   products,
@@ -78,6 +101,20 @@ export function OrdersDesk({
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Order | null>(null);
   const [showEntry, setShowEntry] = useState(initialShowEntry);
+  const [visibleCols, setVisibleCols] = useState<OrderCol[]>(
+    ORDER_COLS.map((c) => c.key),
+  );
+  const [rowDrafts, setRowDrafts] = useState<
+    Record<
+      string,
+      Partial<{
+        customerName: string;
+        customerPhone: string;
+        sourceChannel: string;
+        parcelValue: number;
+      }>
+    >
+  >({});
 
   const filtered = useMemo(() => {
     return orders.filter((o) => {
@@ -132,11 +169,45 @@ export function OrdersDesk({
       return;
     }
     toast("Order updated", "ok");
+    setRowDrafts((d) => {
+      const next = { ...d };
+      delete next[id];
+      return next;
+    });
     await refresh();
     if (selected?.id === id) {
       const detail = await fetch(`/api/orders/${id}`).then((r) => r.json());
       setSelected(detail.order);
     }
+  }
+
+  async function deleteOrder(id: string, orderNumber: string) {
+    if (!confirm(`Remove order ${orderNumber}? This cannot be undone.`)) return;
+    setBusy(id);
+    setError(null);
+    const res = await fetch(`/api/orders/${id}`, { method: "DELETE" });
+    const data = await res.json().catch(() => ({}));
+    setBusy(null);
+    if (!res.ok) {
+      setError(data.error ?? "Delete failed");
+      toast(data.error ?? "Delete failed", "err");
+      return;
+    }
+    toast("Order removed", "ok");
+    if (selected?.id === id) setSelected(null);
+    await refresh();
+  }
+
+  function toggleCol(key: OrderCol) {
+    setVisibleCols((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
+    );
+  }
+
+  function saveRowEdits(order: Order) {
+    const d = rowDrafts[order.id];
+    if (!d || Object.keys(d).length === 0) return;
+    patchOrder(order.id, { action: "edit", ...d });
   }
 
   function exportCsv() {
@@ -158,8 +229,8 @@ export function OrdersDesk({
             Orders
           </h1>
           <p className="mt-1 text-sm text-stone-600">
-            Search phone or order ID. Change status in the row. Use comments for
-            morning call-backs.
+            Add parcel rows, edit customer info in-table, remove orders, and
+            show/hide columns. Comments stay for morning call-backs.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -170,9 +241,28 @@ export function OrdersDesk({
             className="rounded-full"
             onClick={() => setShowEntry((v) => !v)}
           >
-            {showEntry ? "Close" : "+ Pack parcels"}
+            {showEntry ? "Close" : "+ Add parcel rows"}
           </Button>
         </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-stone-200 bg-white p-3 text-xs shadow-sm">
+        <span className="font-semibold uppercase tracking-wide text-stone-500">
+          Columns
+        </span>
+        {ORDER_COLS.map((c) => (
+          <label
+            key={c.key}
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-stone-200 px-2.5 py-1"
+          >
+            <input
+              type="checkbox"
+              checked={visibleCols.includes(c.key)}
+              onChange={() => toggleCol(c.key)}
+            />
+            {c.label}
+          </label>
+        ))}
       </div>
 
       {showEntry ? (
@@ -250,65 +340,139 @@ export function OrdersDesk({
         <table className="w-full min-w-[980px] text-left text-sm">
           <thead className="border-b border-stone-200 bg-stone-50 text-xs uppercase text-stone-500">
             <tr>
-              <th className="px-3 py-2">Order</th>
-              <th className="px-3 py-2">Date</th>
-              <th className="px-3 py-2">Customer</th>
-              <th className="px-3 py-2">Channel</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2">Parcel</th>
-              <th className="px-3 py-2">Quick comment</th>
-              <th className="px-3 py-2">Actions</th>
+              {ORDER_COLS.filter((c) => visibleCols.includes(c.key)).map(
+                (c) => (
+                  <th key={c.key} className="px-3 py-2">
+                    {c.label}
+                  </th>
+                ),
+              )}
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-3 py-8 text-center text-stone-500">
+                <td
+                  colSpan={Math.max(visibleCols.length, 1)}
+                  className="px-3 py-8 text-center text-stone-500"
+                >
                   No orders match these filters.
                 </td>
               </tr>
             ) : (
-              filtered.map((order) => (
-                <tr key={order.id} className="border-b border-stone-100 align-top">
-                  <td className="px-3 py-3">
-                    <button
-                      className="font-medium text-teal-900 hover:underline"
-                      onClick={() => setSelected(order)}
+              filtered.map((order) => {
+                const d = rowDrafts[order.id] ?? {};
+                const dirty = Object.keys(d).length > 0;
+                const ordered = ORDER_COLS.filter((c) =>
+                  visibleCols.includes(c.key),
+                );
+                const cells: Record<OrderCol, ReactNode> = {
+                  order: (
+                    <>
+                      <button
+                        className="font-medium text-teal-900 hover:underline"
+                        onClick={() => setSelected(order)}
+                      >
+                        {order.orderNumber}
+                      </button>
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {order.tags.map((t) => (
+                          <Badge key={t} className="bg-stone-100 text-stone-700">
+                            {t}
+                          </Badge>
+                        ))}
+                      </div>
+                    </>
+                  ),
+                  date: (
+                    <span className="whitespace-nowrap text-xs text-stone-600">
+                      {formatDhakaDateTime(order.createdAt)}
+                    </span>
+                  ),
+                  customer: (
+                    <Input
+                      className="h-8 min-w-[120px] text-xs"
+                      disabled={busy === order.id}
+                      value={d.customerName ?? order.customerName}
+                      onChange={(e) =>
+                        setRowDrafts((prev) => ({
+                          ...prev,
+                          [order.id]: {
+                            ...d,
+                            customerName: e.target.value,
+                          },
+                        }))
+                      }
+                    />
+                  ),
+                  phone: (
+                    <Input
+                      className="h-8 min-w-[110px] text-xs"
+                      disabled={busy === order.id}
+                      value={d.customerPhone ?? order.customerPhone}
+                      onChange={(e) =>
+                        setRowDrafts((prev) => ({
+                          ...prev,
+                          [order.id]: {
+                            ...d,
+                            customerPhone: e.target.value,
+                          },
+                        }))
+                      }
+                    />
+                  ),
+                  channel: (
+                    <select
+                      className="h-8 rounded-md border border-stone-300 bg-white px-2 text-xs"
+                      disabled={busy === order.id}
+                      value={d.sourceChannel ?? order.sourceChannel}
+                      onChange={(e) =>
+                        setRowDrafts((prev) => ({
+                          ...prev,
+                          [order.id]: {
+                            ...d,
+                            sourceChannel: e.target.value,
+                          },
+                        }))
+                      }
                     >
-                      {order.orderNumber}
-                    </button>
-                    <div className="mt-1 flex flex-wrap gap-1">
-                      {order.tags.map((t) => (
-                        <Badge key={t} className="bg-stone-100 text-stone-700">
-                          {t}
-                        </Badge>
+                      {channels.map((c) => (
+                        <option key={c} value={c}>
+                          {CHANNEL_LABELS[c]}
+                        </option>
                       ))}
-                    </div>
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3 text-xs text-stone-600">
-                    {formatDhakaDateTime(order.createdAt)}
-                  </td>
-                  <td className="px-3 py-3">
-                    <div>{order.customerName}</div>
-                    <div className="text-xs text-stone-500">
-                      {order.customerPhone}
-                    </div>
-                  </td>
-                  <td className="px-3 py-3">
-                    {CHANNEL_LABELS[order.sourceChannel]}
-                  </td>
-                  <td className="px-3 py-3">
-                    <Badge className={STATUS_COLORS[order.deliveryStatus]}>
-                      {STATUS_LABELS[order.deliveryStatus]}
-                    </Badge>
-                    {order.reasonCode ? (
-                      <p className="mt-1 text-xs text-stone-500">
-                        {order.reasonCode}
-                      </p>
-                    ) : null}
-                  </td>
-                  <td className="px-3 py-3">{formatBdt(order.parcelValue)}</td>
-                  <td className="px-3 py-3">
+                    </select>
+                  ),
+                  status: (
+                    <>
+                      <Badge className={STATUS_COLORS[order.deliveryStatus]}>
+                        {STATUS_LABELS[order.deliveryStatus]}
+                      </Badge>
+                      {order.reasonCode ? (
+                        <p className="mt-1 text-xs text-stone-500">
+                          {order.reasonCode}
+                        </p>
+                      ) : null}
+                    </>
+                  ),
+                  parcel: (
+                    <Input
+                      className="h-8 w-28 text-xs"
+                      type="number"
+                      disabled={busy === order.id}
+                      value={d.parcelValue ?? order.parcelValue}
+                      onChange={(e) =>
+                        setRowDrafts((prev) => ({
+                          ...prev,
+                          [order.id]: {
+                            ...d,
+                            parcelValue: Number(e.target.value),
+                          },
+                        }))
+                      }
+                    />
+                  ),
+                  comment: (
                     <InlineComment
                       disabled={busy === order.id}
                       value={order.adminComments ?? ""}
@@ -319,9 +483,18 @@ export function OrdersDesk({
                         })
                       }
                     />
-                  </td>
-                  <td className="px-3 py-3">
+                  ),
+                  actions: (
                     <div className="flex flex-wrap gap-1">
+                      {dirty ? (
+                        <Button
+                          size="sm"
+                          disabled={busy === order.id}
+                          onClick={() => saveRowEdits(order)}
+                        >
+                          Save info
+                        </Button>
+                      ) : null}
                       <select
                         className="h-8 rounded-md border border-stone-300 bg-white px-2 text-xs"
                         disabled={busy === order.id}
@@ -356,10 +529,32 @@ export function OrdersDesk({
                       >
                         Slip
                       </Link>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={busy === order.id}
+                        onClick={() =>
+                          deleteOrder(order.id, order.orderNumber)
+                        }
+                      >
+                        Remove
+                      </Button>
                     </div>
-                  </td>
-                </tr>
-              ))
+                  ),
+                };
+                return (
+                  <tr
+                    key={order.id}
+                    className="border-b border-stone-100 align-top"
+                  >
+                    {ordered.map((c) => (
+                      <td key={c.key} className="px-3 py-3">
+                        {cells[c.key]}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

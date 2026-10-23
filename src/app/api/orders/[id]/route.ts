@@ -92,11 +92,27 @@ export async function PATCH(req: Request, ctx: Ctx) {
         return NextResponse.json({ error: "Not found" }, { status: 404 });
       }
 
+      if (user?.role === "GUEST") {
+        return NextResponse.json(
+          { error: "Guests cannot edit orders" },
+          { status: 403 },
+        );
+      }
+
       const data: Record<string, unknown> = {};
       if (body.adminComments !== undefined) data.adminComments = body.adminComments;
       if (body.reasonCode !== undefined) data.reasonCode = body.reasonCode;
       if (body.tags !== undefined) data.tags = stringifyTags(body.tags);
       if (body.parcelValue !== undefined) data.parcelValue = body.parcelValue;
+      if (body.customerName !== undefined) {
+        data.customerName = String(body.customerName).trim();
+      }
+      if (body.customerPhone !== undefined) {
+        data.customerPhone = String(body.customerPhone).trim();
+      }
+      if (body.sourceChannel !== undefined) {
+        data.sourceChannel = String(body.sourceChannel);
+      }
       if (body.totalAmount !== undefined) {
         if (user?.role !== "ADMIN") {
           return NextResponse.json(
@@ -126,4 +142,39 @@ export async function PATCH(req: Request, ctx: Ctx) {
       { status: 400 },
     );
   }
+}
+
+export async function DELETE(_req: Request, ctx: Ctx) {
+  const { id } = await ctx.params;
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (user.role === "GUEST") {
+    return NextResponse.json(
+      { error: "Guests cannot delete orders" },
+      { status: 403 },
+    );
+  }
+  const existing = await prisma.order.findUnique({
+    where: { id },
+    include: { items: true },
+  });
+  if (!existing) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+  await prisma.inboxMessage.updateMany({
+    where: { orderId: id },
+    data: { orderId: null, status: "OPEN" },
+  });
+  await prisma.orderItem.deleteMany({ where: { orderId: id } });
+  await prisma.order.delete({ where: { id } });
+  await writeAuditLog({
+    userId: user.id,
+    action: "DELETE_ORDER",
+    entityType: "Order",
+    entityId: id,
+    previousValue: existing,
+  });
+  return NextResponse.json({ ok: true });
 }

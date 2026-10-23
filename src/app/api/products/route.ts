@@ -88,7 +88,16 @@ export async function PATCH(req: Request) {
   if (body.lowStockThreshold !== undefined) {
     data.lowStockThreshold = Number(body.lowStockThreshold);
   }
-  if (body.name !== undefined) data.name = body.name;
+  if (body.name !== undefined) data.name = String(body.name);
+  if (body.sku !== undefined) {
+    if (!canEditPrices(user.role)) {
+      return NextResponse.json(
+        { error: "Only admins can change SKU" },
+        { status: 403 },
+      );
+    }
+    data.sku = String(body.sku).trim();
+  }
 
   if (
     body.retailPrice !== undefined ||
@@ -132,4 +141,38 @@ export async function PATCH(req: Request) {
   return NextResponse.json({
     product: sanitizeProduct(product, canViewCosts(user.role)),
   });
+}
+
+export async function DELETE(req: Request) {
+  const user = await getCurrentUser();
+  if (!user || !canEditPrices(user.role)) {
+    return NextResponse.json({ error: "Admin only" }, { status: 403 });
+  }
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+  if (!id) {
+    return NextResponse.json({ error: "Product id required" }, { status: 400 });
+  }
+  const existing = await prisma.product.findUnique({ where: { id } });
+  if (!existing) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+  const linked = await prisma.orderItem.count({ where: { productId: id } });
+  if (linked > 0) {
+    return NextResponse.json(
+      {
+        error: `Cannot delete — used on ${linked} order line(s). Set stock to 0 instead.`,
+      },
+      { status: 409 },
+    );
+  }
+  await prisma.product.delete({ where: { id } });
+  await writeAuditLog({
+    userId: user.id,
+    action: "DELETE_PRODUCT",
+    entityType: "Product",
+    entityId: id,
+    previousValue: existing,
+  });
+  return NextResponse.json({ ok: true });
 }

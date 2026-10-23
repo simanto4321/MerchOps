@@ -23,6 +23,8 @@ export type AuditAction =
   | "EDIT_ORDER"
   | "STOCK_UPDATE"
   | "CREATE_ORDER"
+  | "DELETE_ORDER"
+  | "DELETE_PRODUCT"
   | "STATUS_CHANGE"
   | "PARTIAL_RETURN"
   | "EXCHANGE"
