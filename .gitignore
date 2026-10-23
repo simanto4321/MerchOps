@@ -47,3 +47,4 @@ github-updates/repos/
 /prisma/*.db
 /prisma/*.db-journal
 test-screenshots/
+smoke-test-screenshots/
