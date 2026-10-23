@@ -48,3 +48,4 @@ github-updates/repos/
 /prisma/*.db-journal
 test-screenshots/
 smoke-test-screenshots/
+redesign-check/
