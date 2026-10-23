@@ -15,39 +15,17 @@
 html {
   max-width: 100vw;
   min-height: 100%;
-  /* Avoid fixed-bg scroll jank with sticky headers / transforms */
   overflow-x: hidden;
 }
 
 body {
-  position: relative;
-  z-index: 0;
   min-height: 100%;
   color: var(--foreground);
-  /* Soft base only — photo sits in a dedicated fixed layer below */
-  background-color: #e4ecea;
+  /* Calm desk wash — no fixed photo (that made text/panels jump) */
+  background:
+    radial-gradient(ellipse 80% 50% at 0% -10%, rgba(15, 118, 110, 0.1), transparent 55%),
+    linear-gradient(165deg, #e8f0ec 0%, #e4ecea 45%, #dce6e2 100%);
   font-family: var(--font-body), var(--font-bengali), system-ui, sans-serif;
-}
-
-/* Stable warehouse wash (no background-attachment: fixed — that glitches on scroll) */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-color: #d9e5e2;
-  background-image:
-    linear-gradient(
-      165deg,
-      rgba(244, 247, 245, 0.94) 0%,
-      rgba(232, 240, 236, 0.9) 45%,
-      rgba(220, 232, 228, 0.92) 100%
-    ),
-    url("/images/warehouse-hero.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
 html[lang="bn"] body {
@@ -89,73 +67,7 @@ a {
 }
 
 .ghost-btn-light {
-  @apply inline-flex items-center justify-center gap-2 rounded-md border border-stone-300/80 bg-white/90 px-4 py-2 text-xs font-semibold text-[#0c1210] transition-colors hover:bg-white;
-}
-
-/* One soft sweep — not an infinite loop (that caused visible flicker) */
-.metric-shine {
-  position: relative;
-  overflow: hidden;
-}
-
-.metric-shine::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    120deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.28) 48%,
-    transparent 62%
-  );
-  transform: translateX(-130%);
-  animation: sheen 1.4s ease-out 0.4s 1 both;
-  pointer-events: none;
-}
-
-@keyframes sheen {
-  from {
-    transform: translateX(-130%);
-  }
-  to {
-    transform: translateX(130%);
-  }
-}
-
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fade-soft {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.rise-in {
-  animation: rise-in 0.4s ease-out both;
-}
-
-.fade-soft {
-  animation: fade-soft 0.5s ease both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .rise-in,
-  .fade-soft,
-  .metric-shine::after {
-    animation: none !important;
-  }
+  @apply inline-flex items-center justify-center gap-2 rounded-md border border-stone-300 bg-white px-4 py-2 text-xs font-semibold text-[#0c1210] transition-colors hover:bg-stone-50;
 }
 
 @media print {
@@ -165,13 +77,8 @@ a {
     display: none !important;
   }
 
-  body,
-  body::before {
+  body {
     background: white !important;
-  }
-
-  body::before {
-    display: none;
   }
 }
 

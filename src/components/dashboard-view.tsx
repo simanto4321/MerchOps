@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { MetricCard } from "@/components/metric-card";
 import { Badge } from "@/components/ui/badge";
@@ -24,29 +23,16 @@ export function DashboardView({
 
   return (
     <div className="space-y-8">
-      {/* Warehouse banner — light wash so black type stays readable */}
-      <section className="relative isolate overflow-hidden rounded-2xl border border-stone-200/80 shadow-[0_18px_50px_-28px_rgba(12,42,38,0.45)]">
-        <Image
-          src="/images/warehouse-hero.jpg"
-          alt=""
-          fill
-          priority
-          sizes="(max-width: 1024px) 100vw, 960px"
-          className="object-cover"
-          aria-hidden
-        />
-        <div
-          className="absolute inset-0 bg-gradient-to-r from-white/92 via-white/78 to-white/35"
-          aria-hidden
-        />
-        <div className="relative z-10 px-5 py-8 sm:px-7 sm:py-10">
-          <p className="font-[family-name:var(--font-body)] text-[11px] font-bold uppercase tracking-[0.18em] text-[#0c1210]">
+      {/* Text sits on solid panel — image is beside it (no overlay jump) */}
+      <section className="grid overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-[0_18px_50px_-28px_rgba(12,42,38,0.35)] md:grid-cols-2">
+        <div className="flex flex-col justify-center px-5 py-8 sm:px-7 sm:py-10">
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0c1210]">
             {t.brand}
           </p>
           <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl text-[#0c1210] sm:text-4xl">
             {d.title}
           </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#0c1210]/75">
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#0c1210]/75">
             {d.subtitle}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
@@ -64,10 +50,15 @@ export function DashboardView({
             </Link>
           </div>
         </div>
+        <div
+          className="min-h-[180px] bg-cover bg-center md:min-h-full"
+          style={{ backgroundImage: "url(/images/warehouse-hero.jpg)" }}
+          aria-hidden
+        />
       </section>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard shine label={d.ordersToday} value={String(m.dailyOrders)} />
+        <MetricCard label={d.ordersToday} value={String(m.dailyOrders)} />
         <MetricCard label={d.ordersMonth} value={String(m.monthlyOrderCount)} />
         <MetricCard
           label={d.pending}

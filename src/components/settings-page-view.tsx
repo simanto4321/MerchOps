@@ -14,7 +14,7 @@ export function SettingsPageView({
 
   return (
     <div className="space-y-5">
-      <div className="rise-in">
+      <div>
         <h1 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl">
           {t.settings.title}
         </h1>

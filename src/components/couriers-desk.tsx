@@ -132,7 +132,7 @@ export function CouriersDesk() {
 
   return (
     <div className="space-y-6">
-      <div className="rise-in">
+      <div>
         <h1 className="font-[family-name:var(--font-display)] text-3xl text-stone-900 sm:text-4xl">
           {C.title}
         </h1>
@@ -160,7 +160,7 @@ export function CouriersDesk() {
             return (
               <article
                 key={c.id}
-                className="rise-in rounded-2xl border border-stone-200/90 bg-white/95 p-5 shadow-[0_12px_40px_-24px_rgba(12,42,38,0.4)]"
+                className="rounded-2xl border border-stone-200/90 bg-white p-5 shadow-[0_12px_40px_-24px_rgba(12,42,38,0.4)]"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">

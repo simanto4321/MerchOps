@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -60,26 +59,15 @@ export function LoginForm({ nextPath }: { nextPath: string }) {
   }
 
   return (
-    <div className="relative isolate min-h-screen">
-      {/* Sticky warehouse — compositor-stable fixed layer (not body attachment) */}
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <Image
-          src="/images/warehouse-hero.jpg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-          aria-hidden
-        />
-        <div
-          className="absolute inset-0 bg-[#f4f7f5]/92"
-          aria-hidden
-        />
-      </div>
-
-      {/* Scrollable login content */}
-      <div className="relative z-10 flex min-h-screen flex-col">
+    <div
+      className="relative min-h-screen bg-[#e8f0ec]"
+    >
+      <div
+        className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-30"
+        style={{ backgroundImage: "url(/images/warehouse-hero.jpg)" }}
+        aria-hidden
+      />
+      <div className="relative flex min-h-screen flex-col">
         <header className="flex shrink-0 items-center justify-between px-5 py-5 sm:px-8 lg:px-10">
           <Link
             href="/"
