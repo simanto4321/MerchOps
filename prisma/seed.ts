@@ -16,6 +16,7 @@ async function main() {
   const admin = await prisma.user.create({
     data: {
       name: "Ayesha Rahman",
+      username: "admin",
       email: "admin@merchops.local",
       role: "ADMIN",
       pin: "1234",
@@ -24,6 +25,7 @@ async function main() {
   const staff = await prisma.user.create({
     data: {
       name: "Manik Hasan",
+      username: "staff",
       email: "staff@merchops.local",
       role: "STAFF",
       pin: "5678",
@@ -32,6 +34,7 @@ async function main() {
   await prisma.user.create({
     data: {
       name: "Guest Viewer",
+      username: "guest",
       email: "guest@merchops.local",
       role: "GUEST",
       pin: "0000",

@@ -1,6 +1,6 @@
 # MerchOps — Inventory & Order Management
 
-Complete Phase 1–3 ops desk for high-volume Bangladesh retail: multi-channel orders, inventory, partial/exchange returns, courier APIs, ad-spend P&amp;L, Telegram alerts, and immutable audit logs — with EN / বাংলা UI.
+Ops desk for high-volume Bangladesh retail: multi-channel orders, inventory, partial/exchange returns, courier APIs, ad-spend P&amp;L, Telegram alerts, and immutable audit logs — with EN / বাংলা UI.
 
 ## Quick start
 
@@ -21,33 +21,35 @@ npm run db:reset       # Wipe + reseed demo data
 npm run test:features  # API regression (dev server must be running)
 ```
 
-Sign in at `/login` (middleware protects the desk).
+Sign in at `/login` with **username + PIN**. Contact emails stay on each user for customer / delivery queries.
 
-| Role  | Email                | PIN  | Sees costs / couriers setup / audit |
-|-------|----------------------|------|-------------------------------------|
-| Admin | admin@merchops.local | 1234 | Yes                                 |
-| Staff | staff@merchops.local | 5678 | No — packing, orders, ship only     |
-| Guest | guest@merchops.local | 0000 | No                                  |
+| Role  | Username | PIN  | Sees costs / couriers / audit |
+|-------|----------|------|-------------------------------|
+| Admin | `admin`  | 1234 | Yes                           |
+| Staff | `staff`  | 5678 | No — packing, orders, ship    |
+| Guest | `guest`  | 0000 | No                            |
 
-Next phase (Postgres + Vercel): see [`GO_LIVE.md`](./GO_LIVE.md).
+Timezone for daily metrics, filters, and timestamps: **Asia/Dhaka**.
+
+Next phase (hosting): see [`GO_LIVE.md`](./GO_LIVE.md).
 
 ## What’s included
 
 | Area | Route | Notes |
 |------|-------|--------|
-| Landing | `/` | Full-bleed warehouse hero image, feature icons, EN/BN |
-| Home desk | `/dashboard` | Premium warehouse banner, metrics, follow-ups, low stock |
-| Orders | `/orders` | Filters, bulk pack entry, comments, tags, partial/exchange, merge, courier ship |
+| Landing | `/` | Full-bleed warehouse hero, feature icons, EN/BN |
+| Home desk | `/dashboard` | Warehouse banner, metrics, follow-ups, low stock |
+| Orders | `/orders` | Channel / status / date filters, pack entry, comments, partial/exchange, merge, ship |
 | Inbox | `/inbox` | Unified IG / WA / FB / TikTok queue |
 | Stock | `/inventory` | Live qty; factory cost admin-only |
 | Couriers | `/couriers` | Pathao, Steadfast, RedX, Sundarban, Paperfly, eCourier |
-| Ads & P&L | `/analytics` | Monthly revenue, COGS, ad loss flags |
-| Audit | `/audit` | Immutable PRICE_CHANGE / EDIT_ORDER / STOCK_UPDATE |
+| Ads & P&L | `/analytics` | Monthly revenue, COGS, ad loss flags (Dhaka month) |
+| Audit | `/audit` | PRICE_CHANGE / EDIT_ORDER / STOCK_UPDATE / LOGIN |
 | Settings | `/settings` | Telegram bot + webhook notes |
 
 ## APIs
 
-- `GET/POST /api/orders` — list / create (`{ bulk: [...] }` for parcels)
+- `GET/POST /api/orders` — list / create (`{ bulk: [...] }` for parcels); filters `channel`, `status`, `q`, `from`, `to`
 - `PATCH /api/orders/:id` — `status` \| `partial` \| `exchange` \| `merge` \| `edit`
 - `GET/PATCH/POST /api/products`
 - `GET/POST/PATCH /api/inbox`
@@ -55,14 +57,5 @@ Next phase (Postgres + Vercel): see [`GO_LIVE.md`](./GO_LIVE.md).
 - `GET /api/audit`
 - `GET/PUT /api/settings`
 - `GET/POST /api/delivery-connections` · `PATCH /api/delivery-connections/:id` · `POST .../:id/ship`
+- `POST /api/session` — `{ username, pin }`
 - `POST /api/webhooks/order` — `{ channel, customerName, customerPhone, items:[{sku,qty}] }`
-
-## Database
-
-Default: **SQLite** (`DATABASE_URL="file:./dev.db"`).
-
-PostgreSQL: set `DATABASE_URL`, change `provider` in `prisma/schema.prisma` to `postgresql`, then `npm run db:push && npm run db:seed`.
-
-## Stack
-
-Next.js 16 · TypeScript · Tailwind · Prisma 5 · SQLite (Postgres-ready)

@@ -21,12 +21,16 @@ export async function GET(req: Request) {
   const channel = searchParams.get("channel") as SourceChannel | null;
   const status = searchParams.get("status") as DeliveryStatus | "WAITING" | null;
   const q = searchParams.get("q") ?? undefined;
+  const from = searchParams.get("from");
+  const to = searchParams.get("to");
 
   const orders = await prisma.order.findMany({
     where: buildOrderWhere({
       channel: channel || undefined,
       status: status || undefined,
       q,
+      from: from ? new Date(from) : undefined,
+      to: to ? new Date(to) : undefined,
     }),
     include: { items: { include: { product: true } } },
     orderBy: { createdAt: "desc" },

@@ -4,12 +4,24 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/provider";
 
-type UserOption = { id: string; name: string; role: string; email: string };
+type UserOption = {
+  id: string;
+  name: string;
+  role: string;
+  username: string;
+  email: string;
+};
 
 export function RoleSwitcher({
   user,
 }: {
-  user: { id: string; name: string; email: string; role: string } | null;
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+    role: string;
+  } | null;
 }) {
   const router = useRouter();
   const { t } = useI18n();

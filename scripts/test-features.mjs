@@ -65,7 +65,7 @@ async function main() {
   {
     const { res, json } = await req("/api/session", {
       method: "POST",
-      body: JSON.stringify({ email: "admin@merchops.local", pin: "1234" }),
+      body: JSON.stringify({ username: "admin", pin: "1234" }),
     });
     assert("admin login", res.status === 200 && json?.user?.role === "ADMIN", JSON.stringify(json));
     assert("session cookie set", Boolean(jar.cookie));
@@ -214,7 +214,7 @@ async function main() {
   {
     const login = await req("/api/session", {
       method: "POST",
-      body: JSON.stringify({ email: "staff@merchops.local", pin: "5678" }),
+      body: JSON.stringify({ username: "staff", pin: "5678" }),
     });
     assert("staff login", login.res.status === 200 && login.json.user?.role === "STAFF");
     const products = await req("/api/products");

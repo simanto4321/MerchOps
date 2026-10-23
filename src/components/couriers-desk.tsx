@@ -8,6 +8,7 @@ import { Input } from "./ui/input";
 import { useI18n } from "@/lib/i18n/provider";
 import { COURIER_PRESETS } from "@/lib/couriers";
 import { cn } from "@/lib/utils";
+import { formatDhakaDateTime } from "@/lib/time";
 
 type Connection = {
   id: string;
@@ -260,9 +261,7 @@ export function CouriersDesk() {
                 <p className="mt-3 text-xs text-stone-500">
                   {C.lastSync}:{" "}
                   {c.lastSyncedAt
-                    ? `${new Date(c.lastSyncedAt).toLocaleString("en-GB", {
-                        timeZone: "Asia/Dhaka",
-                      })} Asia/Dhaka`
+                    ? formatDhakaDateTime(c.lastSyncedAt)
                     : C.never}
                   {c.lastError ? ` · ${c.lastError}` : ""}
                 </p>

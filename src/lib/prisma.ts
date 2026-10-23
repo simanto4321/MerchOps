@@ -1,10 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 
-/**
- * Shared Prisma client for MerchOps.
- * - Local: SQLite via DATABASE_URL=file:./dev.db (see prisma/schema.prisma)
- * - Production: switch provider to postgresql + Postgres DATABASE_URL
- */
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 export const prisma =

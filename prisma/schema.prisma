@@ -14,10 +14,12 @@ datasource db {
 model User {
   id        String     @id @default(cuid())
   name      String
+  /// Login identity (desk sign-in)
+  username  String     @unique
+  /// Contact email for customer / delivery / ops queries (not used to sign in)
   email     String     @unique
   /// ADMIN | STAFF | GUEST
   role      String     @default("STAFF")
-  /// Demo login PIN (replace with hashed passwords before public launch)
   pin       String     @default("0000")
   createdAt DateTime   @default(now())
   auditLogs AuditLog[]

@@ -1,12 +1,12 @@
 import { prisma } from "./prisma";
 import type { DeliveryStatus } from "./types";
+import { startOfDhakaDay, startOfDhakaMonth } from "./time";
 
 const soldStatuses: DeliveryStatus[] = ["DELIVERED", "PARTIAL"];
 
 export async function getDashboardMetrics() {
-  const now = new Date();
-  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfDay = startOfDhakaDay();
+  const startOfMonth = startOfDhakaMonth();
 
   const [
     products,

@@ -5,10 +5,26 @@ import { SESSION_COOKIE } from "@/lib/session";
 import { writeAuditLog } from "@/lib/audit";
 import { loginSchema } from "@/lib/validation";
 
+function publicUser(user: {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  role: string;
+}) {
+  return {
+    id: user.id,
+    name: user.name,
+    username: user.username,
+    email: user.email,
+    role: user.role,
+  };
+}
+
 export async function POST(req: Request) {
   const body = await req.json();
 
-  // Legacy: switch by userId (role switcher inside app)
+  // Role switcher inside the desk
   if (body.userId && !body.pin) {
     const user = await prisma.user.findUnique({ where: { id: body.userId } });
     if (!user) {
@@ -27,21 +43,24 @@ export async function POST(req: Request) {
       entityId: user.id,
       newValue: { role: user.role, via: "switcher" },
     });
-    return NextResponse.json({
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
-    });
+    return NextResponse.json({ user: publicUser(user) });
   }
 
   const parsed = loginSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Email and PIN required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Username and PIN required" },
+      { status: 400 },
+    );
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: parsed.data.email.toLowerCase() },
-  });
+  const username = parsed.data.username.trim().toLowerCase();
+  const user = await prisma.user.findUnique({ where: { username } });
   if (!user || user.pin !== parsed.data.pin) {
-    return NextResponse.json({ error: "Invalid email or PIN" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Invalid username or PIN" },
+      { status: 401 },
+    );
   }
 
   const jar = await cookies();
@@ -57,12 +76,10 @@ export async function POST(req: Request) {
     action: "LOGIN",
     entityType: "User",
     entityId: user.id,
-    newValue: { role: user.role, email: user.email },
+    newValue: { role: user.role, username: user.username },
   });
 
-  return NextResponse.json({
-    user: { id: user.id, name: user.name, email: user.email, role: user.role },
-  });
+  return NextResponse.json({ user: publicUser(user) });
 }
 
 export async function GET() {
@@ -71,7 +88,13 @@ export async function GET() {
   if (!id) return NextResponse.json({ user: null });
   const user = await prisma.user.findUnique({
     where: { id },
-    select: { id: true, name: true, email: true, role: true },
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      email: true,
+      role: true,
+    },
   });
   return NextResponse.json({ user });
 }

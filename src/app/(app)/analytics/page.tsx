@@ -6,6 +6,7 @@ import { getDashboardMetrics } from "@/lib/analytics";
 import { formatBdt } from "@/lib/utils";
 import { getCurrentUser, canViewCosts } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { APP_TIMEZONE, dhakaMonthLabel, formatDhakaDateTime } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
 
@@ -28,12 +29,7 @@ export default async function AnalyticsPage() {
     }),
   ]);
 
-  const now = new Date();
-  const monthLabel = now.toLocaleString("en-GB", {
-    month: "long",
-    year: "numeric",
-    timeZone: "Asia/Dhaka",
-  });
+  const monthLabel = dhakaMonthLabel();
 
   return (
     <div className="space-y-6">
@@ -42,8 +38,8 @@ export default async function AnalyticsPage() {
           Ads & monthly P&amp;L
         </h1>
         <p className="mt-1 text-sm text-stone-600">
-          {monthLabel} Asia/Dhaka · Campaign spend vs factory COGS and retail
-          sales. Loss flags appear when ads wipe out margin.
+          {monthLabel} · {APP_TIMEZONE} · Campaign spend vs factory COGS and
+          retail sales. Loss flags appear when ads wipe out margin.
         </p>
       </div>
 
@@ -138,8 +134,7 @@ export default async function AnalyticsPage() {
                   <div className="font-medium">{s.campaignName}</div>
                   <div className="text-xs text-stone-500">
                     {s.product?.name ?? "General"} ·{" "}
-                    {s.spentAt.toLocaleString("en-GB", { timeZone: "Asia/Dhaka" })}{" "}
-                    Asia/Dhaka
+                    {formatDhakaDateTime(s.spentAt)}
                   </div>
                 </div>
                 <div className="font-medium">{formatBdt(s.amount)}</div>

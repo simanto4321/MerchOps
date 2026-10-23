@@ -52,10 +52,12 @@ Use this after the app features are frozen. Order of work:
 - Point WhatsApp/IG bots to `POST /api/webhooks/order`.
 - Confirm Telegram chat receives new-order alerts.
 
-## Demo PINs (local / staging only)
+## Demo accounts (local / staging only)
 
-| Role  | Email                | PIN  |
-|-------|----------------------|------|
-| Admin | admin@merchops.local | 1234 |
-| Staff | staff@merchops.local | 5678 |
-| Guest | guest@merchops.local | 0000 |
+Sign in with **username + PIN**. Emails on users are for customer / delivery contact only.
+
+| Role  | Username | PIN  |
+|-------|----------|------|
+| Admin | admin    | 1234 |
+| Staff | staff    | 5678 |
+| Guest | guest    | 0000 |

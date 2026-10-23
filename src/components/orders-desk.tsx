@@ -13,6 +13,7 @@ import {
   STATUS_LABELS,
 } from "@/lib/constants";
 import { formatBdt } from "@/lib/utils";
+import { formatDhakaDateTime } from "@/lib/time";
 import { useToast } from "./toast";
 import Link from "next/link";
 
@@ -71,6 +72,8 @@ export function OrdersDesk({
   const [channel, setChannel] = useState("");
   const [status, setStatus] = useState(initialStatus);
   const [q, setQ] = useState(initialQ);
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Order | null>(null);
@@ -84,19 +87,29 @@ export function OrdersDesk({
       } else if (status && o.deliveryStatus !== status) {
         return false;
       }
+      if (fromDate) {
+        const start = new Date(`${fromDate}T00:00:00+06:00`);
+        if (new Date(o.createdAt) < start) return false;
+      }
+      if (toDate) {
+        const end = new Date(`${toDate}T23:59:59.999+06:00`);
+        if (new Date(o.createdAt) > end) return false;
+      }
       if (q) {
         const hay = `${o.orderNumber} ${o.customerName} ${o.customerPhone} ${o.adminComments ?? ""} ${o.reasonCode ?? ""}`.toLowerCase();
         if (!hay.includes(q.toLowerCase())) return false;
       }
       return true;
     });
-  }, [orders, channel, status, q]);
+  }, [orders, channel, status, q, fromDate, toDate]);
 
   async function refresh() {
     const params = new URLSearchParams();
     if (channel) params.set("channel", channel);
     if (status) params.set("status", status);
     if (q) params.set("q", q);
+    if (fromDate) params.set("from", new Date(`${fromDate}T00:00:00+06:00`).toISOString());
+    if (toDate) params.set("to", new Date(`${toDate}T23:59:59.999+06:00`).toISOString());
     const res = await fetch(`/api/orders?${params}`);
     const data = await res.json();
     setOrders(data.orders ?? []);
@@ -131,6 +144,8 @@ export function OrdersDesk({
     if (channel) params.set("channel", channel);
     if (status) params.set("status", status);
     if (q) params.set("q", q);
+    if (fromDate) params.set("from", new Date(`${fromDate}T00:00:00+06:00`).toISOString());
+    if (toDate) params.set("to", new Date(`${toDate}T23:59:59.999+06:00`).toISOString());
     window.location.href = `/api/orders/export?${params}`;
     toast("Downloading CSV…", "info");
   }
@@ -170,8 +185,9 @@ export function OrdersDesk({
         />
       ) : null}
 
-      <div className="grid gap-2 rounded-xl border border-stone-200 bg-white p-3 shadow-sm sm:grid-cols-4">
+      <div className="grid gap-2 rounded-xl border border-stone-200 bg-white p-3 shadow-sm sm:grid-cols-2 lg:grid-cols-6">
         <Input
+          className="lg:col-span-2"
           placeholder="Search phone, order ID, comment…"
           value={q}
           onChange={(e) => setQ(e.target.value)}
@@ -201,7 +217,25 @@ export function OrdersDesk({
             </option>
           ))}
         </select>
-        <Button variant="secondary" onClick={refresh}>
+        <Input
+          type="date"
+          value={fromDate}
+          onChange={(e) => setFromDate(e.target.value)}
+          aria-label="From date"
+          title="From (Asia/Dhaka)"
+        />
+        <Input
+          type="date"
+          value={toDate}
+          onChange={(e) => setToDate(e.target.value)}
+          aria-label="To date"
+          title="To (Asia/Dhaka)"
+        />
+        <Button
+          variant="secondary"
+          className="sm:col-span-2 lg:col-span-6 lg:w-fit"
+          onClick={refresh}
+        >
           Apply filters
         </Button>
       </div>
@@ -217,6 +251,7 @@ export function OrdersDesk({
           <thead className="border-b border-stone-200 bg-stone-50 text-xs uppercase text-stone-500">
             <tr>
               <th className="px-3 py-2">Order</th>
+              <th className="px-3 py-2">Date</th>
               <th className="px-3 py-2">Customer</th>
               <th className="px-3 py-2">Channel</th>
               <th className="px-3 py-2">Status</th>
@@ -228,7 +263,7 @@ export function OrdersDesk({
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-3 py-8 text-center text-stone-500">
+                <td colSpan={8} className="px-3 py-8 text-center text-stone-500">
                   No orders match these filters.
                 </td>
               </tr>
@@ -249,6 +284,9 @@ export function OrdersDesk({
                         </Badge>
                       ))}
                     </div>
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3 text-xs text-stone-600">
+                    {formatDhakaDateTime(order.createdAt)}
                   </td>
                   <td className="px-3 py-3">
                     <div>{order.customerName}</div>

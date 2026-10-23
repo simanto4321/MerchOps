@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/session";
 import { formatBdt, parseTags } from "@/lib/utils";
 import { CHANNEL_LABELS, STATUS_LABELS } from "@/lib/constants";
 import { PrintActions } from "@/components/print-actions";
+import { formatDhakaDateTime } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
 
@@ -84,8 +85,7 @@ export default async function PackingSlipPage({
         <div>
           <p>Parcel value</p>
           <p className="text-xs text-stone-500">
-            {order.createdAt.toLocaleString("en-GB", { timeZone: "Asia/Dhaka" })}{" "}
-            Asia/Dhaka
+            {formatDhakaDateTime(order.createdAt)}
           </p>
         </div>
         <p className="text-2xl font-semibold">{formatBdt(order.parcelValue)}</p>

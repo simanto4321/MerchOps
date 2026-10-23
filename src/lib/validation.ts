@@ -40,7 +40,7 @@ export const bulkOrdersSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  email: z.string().email(),
+  username: z.string().trim().min(2).max(40),
   pin: z.string().min(4).max(12),
 });
 

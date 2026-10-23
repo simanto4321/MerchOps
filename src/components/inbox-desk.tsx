@@ -7,6 +7,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { CHANNEL_LABELS } from "@/lib/constants";
+import { formatDhakaDateTime } from "@/lib/time";
 
 type Message = {
   id: string;
@@ -146,10 +147,7 @@ export function InboxDesk({
                   </Badge>
                 ))}
                 <span className="text-xs text-stone-500">
-                  {new Date(m.createdAt).toLocaleString("en-GB", {
-                    timeZone: "Asia/Dhaka",
-                  })}{" "}
-                  Asia/Dhaka
+                  {formatDhakaDateTime(m.createdAt)}
                 </span>
               </div>
               <h3 className="mt-2 font-medium">

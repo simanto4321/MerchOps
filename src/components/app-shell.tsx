@@ -25,7 +25,13 @@ export function AppShell({
   user,
 }: {
   children: React.ReactNode;
-  user: { id: string; name: string; email: string; role: string } | null;
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+    role: string;
+  } | null;
 }) {
   const pathname = usePathname();
   const router = useRouter();

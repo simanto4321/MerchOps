@@ -2,6 +2,7 @@ import { AccessDenied } from "@/components/access-denied";
 import { Badge } from "@/components/ui/badge";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, canManageAudit } from "@/lib/session";
+import { formatDhakaDateTime } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
 
@@ -54,10 +55,7 @@ export default async function AuditPage() {
               logs.map((log) => (
                 <tr key={log.id} className="border-b border-stone-100 align-top">
                   <td className="px-3 py-3 text-xs text-stone-500 whitespace-nowrap">
-                    {log.timestamp.toLocaleString("en-GB", {
-                      timeZone: "Asia/Dhaka",
-                    })}{" "}
-                    Asia/Dhaka
+                    {formatDhakaDateTime(log.timestamp)}
                   </td>
                   <td className="px-3 py-3">
                     <div className="font-medium">{log.user?.name ?? "System"}</div>
