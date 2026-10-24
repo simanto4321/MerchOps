@@ -51,3 +51,9 @@ smoke-test-screenshots/
 redesign-check/
 final-e2e/
 .env*
+frontend/.next/
+frontend/node_modules/
+backend/node_modules/
+backend/dist/
+.env.local
+.env.vercel

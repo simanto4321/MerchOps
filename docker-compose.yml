@@ -1,9 +1,8 @@
-# Real PostgreSQL for MerchOps (optional — default local DB is SQLite)
+# MerchOps — PostgreSQL + Backend API + Frontend (AWS-friendly)
 # Usage:
-#   docker compose up -d
-#   cp .env.postgres.example .env   # or merge DATABASE_URL
-#   npm run db:push && npm run db:seed
-#   npm run dev
+#   docker compose up --build
+#   open http://localhost:4317
+#   backend health: http://localhost:4000/api/health
 
 services:
   db:
@@ -23,6 +22,47 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: merchops-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://merchops:merchops@db:5432/merchops
+      PORT: "4000"
+      ALLOW_DEMO_ACCOUNTS: "true"
+      ALLOW_ROLE_SWITCH: "false"
+      NODE_ENV: production
+    ports:
+      - "4000:4000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "npx prisma db push --skip-generate &&
+             npx tsx prisma/seed.ts &&
+             npx tsx src/index.ts"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: merchops-frontend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://merchops:merchops@db:5432/merchops
+      NEXT_PUBLIC_APP_NAME: MerchOps
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      ALLOW_DEMO_ACCOUNTS: "true"
+      ALLOW_ROLE_SWITCH: "false"
+      PORT: "4317"
+    ports:
+      - "4317:4317"
+    depends_on:
+      - backend
+      - db
 
 volumes:
   merchops_pg:

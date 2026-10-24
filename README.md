@@ -1,93 +1,51 @@
-# MerchOps — Inventory & Order Desk
+# MerchOps
 
-Full-stack ops desk for high-volume Bangladesh retail: multi-channel orders, inventory, partial/exchange returns, courier APIs, ad-spend P&amp;L, Telegram alerts, and immutable audit logs — with EN / বাংলা UI.
+Inventory & multi-channel order desk — **separated `frontend/` + `backend/`**, PostgreSQL, CourierAdapter layer, Docker for AWS.
 
-## Stack
+- **Live:** [https://merchops-woad.vercel.app](https://merchops-woad.vercel.app)
+- **GitHub:** [simanto4321/MerchOps](https://github.com/simanto4321/MerchOps)
+- **Docs:** [`docs/`](./docs/) · **Full report:** [`REPORT.md`](./REPORT.md)
 
-| Layer | Tech |
-|-------|------|
-| **Frontend** | Next.js App Router, React, Tailwind — landing, login, desk pages |
-| **Backend** | Next.js Route Handlers under `/api/*` — session auth, orders, stock, inbox, couriers, analytics, audit |
-| **Database** | Prisma ORM — **SQLite** by default (`prisma/dev.db`); **PostgreSQL** via Docker Compose or hosted URL |
+## Structure
 
-PINs are stored as **bcrypt hashes**. Sessions use an httpOnly cookie (`merchops_user_id`). Desk APIs require a valid session.
+```
+frontend/   → Next.js UI (+ /api for Vercel)
+backend/    → Hono API, Prisma (Postgres), Courier adapters
+docs/       → PRD, structure, system design, functional design, API history
+docker-compose.yml → db + backend + frontend
+```
 
-## Live
-
-- Production: [https://merchops-woad.vercel.app](https://merchops-woad.vercel.app)
-
-## Quick start (local)
+## Quick start (Docker)
 
 ```bash
+docker compose up --build
+```
+
+- UI: http://127.0.0.1:4317  
+- Backend: http://127.0.0.1:4000/api/health  
+- API catalog: http://127.0.0.1:4000/api/meta/api-catalog  
+
+## Quick start (workspaces)
+
+```bash
+cp .env.example .env
+# DATABASE_URL must be PostgreSQL
 npm install
-cp .env.example .env          # if needed
-npm run db:reset              # create schema + seed hashed demo users
-npm run dev                   # http://127.0.0.1:4317
-```
-
-- Landing: [http://127.0.0.1:4317](http://127.0.0.1:4317)
-- Login: [http://127.0.0.1:4317/login](http://127.0.0.1:4317/login)
-- Desk: [http://127.0.0.1:4317/dashboard](http://127.0.0.1:4317/dashboard)
-- Health: [http://127.0.0.1:4317/api/health](http://127.0.0.1:4317/api/health)
-
-```bash
-npm run lint           # TypeScript check
-npm run build          # prisma generate + production build
-npm run test:features  # API regression (dev server must be running)
-```
-
-### Demo accounts (local / staging)
-
-Sign in with **username + PIN**. Contact emails are for ops only, not login.
-
-| Role  | Username | PIN  |
-|-------|----------|------|
-| Admin | `admin`  | 1234 |
-| Staff | `staff`  | 5678 |
-| Guest | `guest`  | 0000 |
-
-Set `ALLOW_DEMO_ACCOUNTS=false` and `ALLOW_ROLE_SWITCH=false` before a public deploy (quick-login chips and in-desk role switcher turn off).
-
-Timezone for daily metrics, filters, and timestamps: **Asia/Dhaka**.
-
-## PostgreSQL (optional)
-
-Docker is not required for local SQLite. When you want Postgres:
-
-```bash
-docker compose up -d
-# set provider = "postgresql" in prisma/schema.prisma
-cp .env.postgres.example .env
 npm run db:reset
-npm run dev
+npm run dev:backend   # :4000
+npm run dev           # frontend :4317
 ```
 
-Hosted: Neon / Supabase / Railway — see [`GO_LIVE.md`](./GO_LIVE.md).
+| Role | Username | PIN |
+|------|----------|-----|
+| Admin | admin | 1234 |
+| Staff | staff | 5678 |
+| Guest | guest | 0000 |
 
-## What’s included
+## Docs map
 
-| Area | Route | Notes |
-|------|-------|--------|
-| Landing | `/` | Full-bleed warehouse hero, EN/BN |
-| Home desk | `/dashboard` | Metrics, follow-ups, low stock |
-| Orders | `/orders` | Channel / status / date filters, pack, partial/exchange, merge, ship |
-| Inbox | `/inbox` | Unified IG / WA / FB / TikTok queue |
-| Stock | `/inventory` | Live qty; factory cost admin-only |
-| Couriers | `/couriers` | Pathao, Steadfast, RedX, Sundarban, Paperfly, eCourier |
-| Ads & P&L | `/analytics` | Monthly revenue, COGS, ad loss flags |
-| Audit | `/audit` | PRICE_CHANGE / EDIT_ORDER / STOCK_UPDATE / LOGIN |
-| Settings | `/settings` | Telegram bot + webhook notes |
-
-## Backend APIs
-
-- `POST /api/session` — `{ username, pin }` · `GET` current user · `DELETE` logout
-- `GET /api/users?demo=1` — demo PIN hints (gated by `ALLOW_DEMO_ACCOUNTS`)
-- `GET/POST /api/orders` · `PATCH /api/orders/:id` · `GET /api/orders/export`
-- `GET/PATCH/POST /api/products`
-- `GET/POST/PATCH /api/inbox`
-- `GET/POST /api/analytics`
-- `GET /api/audit`
-- `GET/PUT /api/settings`
-- `GET/POST /api/delivery-connections` · `PATCH …/:id` · `POST …/:id/ship`
-- `POST /api/webhooks/order` — channel bots → create order
-- `GET /api/health` — DB counts + feature flags
+1. [PRD](./docs/01-PRD.md)  
+2. [Structure](./docs/02-STRUCTURE.md)  
+3. [System design](./docs/03-SYSTEM-DESIGN.md)  
+4. [Functional design](./docs/04-FUNCTIONAL-DESIGN.md)  
+5. [Backend API history](./docs/05-BACKEND-API-HISTORY.md)  
