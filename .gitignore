@@ -57,3 +57,5 @@ backend/node_modules/
 backend/dist/
 .env.local
 .env.vercel
+backend/prisma/*.db
+backend/prisma/*.db-journal
